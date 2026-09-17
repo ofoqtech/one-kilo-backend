@@ -34,8 +34,8 @@
 
                 </div>
             </li>
-            <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-style" id="ok-theme-toggle" href="#" title="{{ __('dashboard.toggle-dark-mode') }}">
-                <i class="ficon fa-solid fa-moon"></i><i class="ficon fa-solid fa-sun"></i>
+            <li class="nav-item d-none d-lg-block"><a class="nav-link" id="ok-theme-toggle" href="#" title="{{ __('dashboard.toggle-dark-mode') }}">
+                <i class="ok-ficon fa-solid fa-moon"></i><i class="ok-ficon fa-solid fa-sun"></i>
             </a></li>
             {{-- <li class="nav-item nav-search"><a class="nav-link nav-link-search"><i class="ficon fa-solid fa-search"></i></a>
                 <div class="search-input">
