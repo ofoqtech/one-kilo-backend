@@ -13,7 +13,7 @@ class CartItemResource extends JsonResource
             'id' => $this->id,
             'quantity' => (int) $this->quantity,
             'product' => $this->whenLoaded('product', fn() => new ProductSummaryResource($this->product)),
-            'sku_id' => $this->product_sku_id,
+            'sku_id' => (string) $this->product_sku_id,
             'sku' => $this->whenLoaded('sku', fn () => $this->sku ? new ProductSkuResource($this->sku) : null),
             'unit_price' => (double) $this->unitPrice(),
             'line_total' => (double) $this->lineTotal(),

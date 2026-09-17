@@ -78,11 +78,72 @@ class FirebaseService
     }
 
     /**
-     * Send an FCM push notification to the 'besohola' topic.
+     * Send an FCM push notification to multiple device tokens (multicast).
      *
-     * @param  string  $title
-     * @param  string  $body
-     * @return bool
+     * @param  array<int, string>  $deviceTokens
+     */
+    public function sendMulticast(array $deviceTokens, string $title, string $body): bool
+    {
+        $deviceTokens = array_values(array_unique(array_filter($deviceTokens)));
+
+        if ($deviceTokens === []) {
+            return false;
+        }
+
+        $notification = FirebaseNotification::create($title, $body);
+
+        $androidConfig = AndroidConfig::fromArray([
+            'priority'     => 'high',
+            'notification' => [
+                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+            ],
+        ]);
+
+        $apnsConfig = ApnsConfig::fromArray([
+            'headers' => ['apns-priority' => '10'],
+            'payload' => [
+                'aps' => [
+                    'sound' => 'default',
+                ],
+            ],
+        ]);
+
+        $message = CloudMessage::new()
+            ->withNotification($notification)
+            ->withAndroidConfig($androidConfig)
+            ->withApnsConfig($apnsConfig);
+
+        $successCount = 0;
+        $failureCount = 0;
+
+        try {
+            foreach (array_chunk($deviceTokens, 500) as $chunk) {
+                $report = $this->messaging->sendMulticast($message, $chunk);
+                $successCount += $report->successes()->count();
+                $failureCount += $report->failures()->count();
+            }
+
+            Log::info('Firebase multicast push completed', [
+                'tokens'   => count($deviceTokens),
+                'success'  => $successCount,
+                'failed'   => $failureCount,
+                'title'    => $title,
+            ]);
+
+            return $successCount > 0;
+        } catch (\Throwable $e) {
+            $this->logger->error('Firebase multicast push failed', [
+                'tokens' => count($deviceTokens),
+                'title'  => $title,
+                'body'   => $body,
+                'error'  => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Send an FCM push notification to the 'oneKilo' topic.
      */
     public function sendToTopic(string $title, string $body): bool
     {

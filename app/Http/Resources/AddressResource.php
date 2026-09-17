@@ -14,8 +14,8 @@ class AddressResource extends JsonResource
             'label' => $this->label,
             'contact_name' => $this->contact_name,
             'phone' => $this->phone,
-            'country_id' => $this->country_id,
-            'governorate_id' => $this->governorate_id,
+            'country_id' => (string) $this->country_id,
+            'governorate_id' => (string) $this->governorate_id,
             'region_id' => $this->region_id,
             'country' => $this->country ? [
                 'id' => $this->country->id,

@@ -67,8 +67,15 @@ class NotificationsCreate extends Component
 
         if ($this->type == 'all') {
             Notification::create($data);
-            //send firebase notifications
-            $firebaseService->sendToTopic($data['title']['ar'], $data['message']['ar']);
+
+            $tokens = User::query()
+                ->where('status', 1)
+                ->whereNotNull('fcm_token')
+                ->where('fcm_token', '!=', '')
+                ->pluck('fcm_token')
+                ->all();
+
+            $firebaseService->sendMulticast($tokens, $data['title']['ar'], $data['message']['ar']);
         } else {
             $users = User::whereIn('id', $this->selected_users)->get();
             foreach ($users as $user) {
