@@ -81,7 +81,11 @@
     {{-- end file input to upload image and show it --}}
 
     {{-- One Kilo brand theme (loaded last so it overrides the vendor theme) --}}
-    <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/app-assets/css/custom/one-kilo-theme.css">
+    @php
+        $okThemePath = public_path('dashboard/app-assets/css/custom/one-kilo-theme.css');
+        $okThemeVersion = file_exists($okThemePath) ? filemtime($okThemePath) : time();
+    @endphp
+    <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/app-assets/css/custom/one-kilo-theme.css?v={{ $okThemeVersion }}">
 
     <script>
         (function () {

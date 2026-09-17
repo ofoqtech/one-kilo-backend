@@ -61,7 +61,11 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/assets/css/style.css">
     @endif
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/app-assets/css/custom/one-kilo-theme.css">
+    @php
+        $okThemePath = public_path('dashboard/app-assets/css/custom/one-kilo-theme.css');
+        $okThemeVersion = file_exists($okThemePath) ? filemtime($okThemePath) : time();
+    @endphp
+    <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/app-assets/css/custom/one-kilo-theme.css?v={{ $okThemeVersion }}">
 
 </head>
 <!-- END: Head-->
