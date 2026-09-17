@@ -1,6 +1,8 @@
 <?php
 return [
 
+    'no-active-popup-found' => 'No active notification or offer right now',
+    'retrieved-successfully' => 'Retrieved successfully',
     'home' => 'Home',
     'shop' => 'Shop',
     'event' => 'Event',
@@ -238,6 +240,8 @@ return [
     'coupon-usage-limit-reached'                    => 'This coupon has reached its total usage limit',
     'coupon-user-usage-limit-reached'               => 'You have already reached the usage limit for this coupon',
     'coupon-minimum-order-not-met'                  => 'This cart does not meet the coupon minimum order amount',
+    'coupon-not-available-in-region'                => 'This coupon is not available in your region',
+    'coupon-not-applicable-to-cart-items'           => 'This coupon does not apply to the items in your cart',
     'cart-product-not-available'                    => 'This product is not available right now',
     'cart-product-out-of-stock'                     => 'This product is currently out of stock',
     'cart-insufficient-stock'                       => 'The requested quantity exceeds the available stock',

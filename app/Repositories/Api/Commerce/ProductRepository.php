@@ -202,7 +202,10 @@ class ProductRepository
             'oldest' => $query->oldest(),
             'name_asc' => $query->orderBy('name'),
             'name_desc' => $query->orderByDesc('name'),
-            default => $query->latest(),
+            default => $query
+                ->orderByRaw('CASE WHEN products.sort_order IS NULL THEN 1 ELSE 0 END')
+                ->orderBy('products.sort_order')
+                ->latest(),
         };
     }
 

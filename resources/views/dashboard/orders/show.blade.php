@@ -58,9 +58,43 @@
                     </a>
                     @endif
 
+                    @if ($canChangeStatus && ! in_array($order->status, [\App\Models\Order::STATUS_DELIVERED, \App\Models\Order::STATUS_CANCELED, \App\Models\Order::STATUS_FAILED]))
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                            <i class="fa-solid fa-ban"></i> {{ __('dashboard.cancel-order') }}
+                        </button>
+                    @endif
+
                 </div>
             </div>
         </div>
+
+        @if ($canChangeStatus)
+            <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form action="{{ route('dashboard.orders.cancel', $order) }}" method="POST" class="modal-content">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ __('dashboard.cancel-order') }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-muted">{{ __('dashboard.confirm-cancel-order') }}</p>
+                            <label class="form-label">{{ __('dashboard.cancellation-reason') }}</label>
+                            <textarea name="reason" class="form-control" rows="3" required
+                                placeholder="{{ __('dashboard.cancellation-reason-placeholder') }}"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                {{ __('dashboard.close') }}
+                            </button>
+                            <button type="submit" class="btn btn-danger">
+                                {{ __('dashboard.cancel-order') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
 
         <div class="row">
             <div class="col-xl-4 col-lg-5">
@@ -97,16 +131,20 @@
                         @if ($canChangeStatus)
                             <hr>
 
+                            @php
+                                $selectableNextStatuses = array_values(array_diff($allowedNextStatuses, [\App\Models\Order::STATUS_CANCELED]));
+                            @endphp
+
                             <div>
                                 <span class="fw-bolder d-block mb-50">{{ __('dashboard.change-status') }}</span>
 
-                                @if ($allowedNextStatuses !== [])
+                                @if ($selectableNextStatuses !== [])
                                     <form action="{{ route('dashboard.orders.status.update', $order) }}" method="POST"
                                         class="d-flex flex-column gap-75">
                                         @csrf
                                         <select name="status" class="form-select" required>
                                             <option value="" selected disabled>{{ __('dashboard.next-status') }}</option>
-                                            @foreach ($allowedNextStatuses as $nextStatus)
+                                            @foreach ($selectableNextStatuses as $nextStatus)
                                                 <option value="{{ $nextStatus }}">
                                                     {{ __('dashboard.order-status-' . str_replace('_', '-', $nextStatus)) }}
                                                 </option>
@@ -197,8 +235,51 @@
                                     <li>
                                         <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
                                         <span>{{ $order->user?->phone ?? data_get($address, 'phone') ?? '-' }}</span>
+                                        @php $customerPhone = $order->user?->phone ?? data_get($address, 'phone'); @endphp
+                                        @if ($customerPhone)
+                                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $customerPhone) }}"
+                                                target="_blank" rel="noopener noreferrer"
+                                                class="btn btn-sm btn-light-success ms-50" title="{{ __('dashboard.contact-on-whatsapp') }}">
+                                                <i class="fa-brands fa-whatsapp"></i>
+                                            </a>
+                                        @endif
                                     </li>
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.delivery-agent-info') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                @if ($order->delivery)
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.delivery-agent-name') }}:</span>
+                                            <span>{{ $order->delivery->full_name }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
+                                            <span>{{ $order->delivery->phone ?? '-' }}</span>
+                                            @if ($order->delivery->phone)
+                                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $order->delivery->phone) }}"
+                                                    target="_blank" rel="noopener noreferrer"
+                                                    class="btn btn-sm btn-light-success ms-50" title="{{ __('dashboard.contact-on-whatsapp') }}">
+                                                    <i class="fa-brands fa-whatsapp"></i>
+                                                </a>
+                                            @endif
+                                        </li>
+                                        <li>
+                                            <span class="fw-bolder me-25">{{ __('dashboard.delivery-agent-vehicle') }}:</span>
+                                            <span>{{ trim(($order->delivery->vehicle_brand ?? '') . ' ' . ($order->delivery->vehicle_model ?? '')) ?: ($order->delivery->vehicle_type ?? '-') }}</span>
+                                        </li>
+                                    </ul>
+                                @else
+                                    <p class="text-muted mb-0">{{ __('dashboard.no-delivery-agent-assigned') }}</p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -397,6 +478,10 @@
                     </div>
 
                     <div class="col-12">
+                        @livewire('dashboard.orders.order-items-editor', ['orderId' => $order->id], key('order-items-editor-' . $order->id))
+                    </div>
+
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">{{ __('dashboard.order-items') }}</h4>
@@ -514,3 +599,19 @@
         </div>
     </section>
 @endsection
+
+@push('js')
+    <script>
+        document.addEventListener('livewire:init', function () {
+            if (!window.Echo) {
+                return;
+            }
+
+            window.Echo.channel('orders-dashboard').listen('.order.status-changed', (payload) => {
+                if (payload.id === {{ $order->id }}) {
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
+@endpush

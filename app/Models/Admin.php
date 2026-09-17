@@ -69,4 +69,14 @@ class Admin extends Authenticatable
             }
         }
     }
+
+    public function shifts()
+    {
+        return $this->morphMany(Shift::class, 'shiftable');
+    }
+
+    public function currentShift(): ?Shift
+    {
+        return $this->shifts()->open()->latest('started_at')->first();
+    }
 }

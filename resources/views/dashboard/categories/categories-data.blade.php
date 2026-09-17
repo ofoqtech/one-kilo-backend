@@ -30,10 +30,15 @@
         </div>
     </div>
 
+    <p class="text-muted small mb-1">
+        <i class="fa-solid fa-arrows-up-down"></i> {{ __('dashboard.drag-to-reorder-hint') }}
+    </p>
+
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th></th>
                     <th>#</th>
                     <th>{{ __('dashboard.category-image') }}</th>
                     <th>{{ __('dashboard.category') }}</th>
@@ -47,9 +52,12 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="categories-sortable-body">
                 @forelse ($items as $index => $item)
-                    <tr>
+                    <tr wire:key="category-row-{{ $item->id }}" data-id="{{ $item->id }}">
+                        <td class="drag-handle" style="cursor: grab; width: 24px;">
+                            <i class="fa-solid fa-grip-vertical text-muted"></i>
+                        </td>
                         <td>{{ $items->firstItem() + $index }}</td>
                         <td>
                             @if ($item->image)
@@ -99,7 +107,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
+                        <td colspan="11" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -110,3 +118,44 @@
         {{ $items->links() }}
     </div>
 </div>
+
+@push('js')
+    <script src="{{ asset('dashboard/app-assets/vendors/js/extensions/sortable.min.js') }}"></script>
+    <script>
+        (function () {
+            let sortableInstance = null;
+
+            function initCategoriesSortable() {
+                const body = document.getElementById('categories-sortable-body');
+
+                if (!body || typeof Sortable === 'undefined') {
+                    return;
+                }
+
+                if (sortableInstance) {
+                    sortableInstance.destroy();
+                }
+
+                sortableInstance = Sortable.create(body, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    onEnd: function () {
+                        const orderedIds = Array.from(body.querySelectorAll('tr[data-id]'))
+                            .map((row) => parseInt(row.dataset.id, 10));
+
+                        @this.call('reorder', orderedIds);
+                    },
+                });
+            }
+
+            document.addEventListener('livewire:navigated', initCategoriesSortable);
+            document.addEventListener('livewire:init', initCategoriesSortable);
+            initCategoriesSortable();
+            Livewire.hook('morph.updated', ({ el }) => {
+                if (el.id === 'categories-sortable-body' || el.querySelector?.('#categories-sortable-body')) {
+                    initCategoriesSortable();
+                }
+            });
+        })();
+    </script>
+@endpush

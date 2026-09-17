@@ -43,13 +43,57 @@
                 <p class="dashboard-home-subtitle mb-0">{{ __('dashboard.analytics-description') }}</p>
             </div>
 
-            <div class="dashboard-range-switcher d-flex flex-wrap gap-50">
+            <div class="dashboard-range-switcher d-flex flex-wrap align-items-center gap-50">
+                <a href="{{ route('dashboard.shifts.index') }}" class="dashboard-range-pill">
+                    <i class="fa-solid fa-clock"></i> {{ __('dashboard.current-shift') }}
+                </a>
                 @foreach ($filters['options'] as $key => $label)
-                    <a href="{{ route('dashboard.home', ['range' => $key]) }}"
-                        class="dashboard-range-pill {{ $filters['active'] === $key ? 'active' : '' }}">
-                        {{ $label }}
-                    </a>
+                    @if ($key !== 'custom')
+                        <a href="{{ route('dashboard.home', ['range' => $key]) }}"
+                            class="dashboard-range-pill {{ $filters['active'] === $key ? 'active' : '' }}">
+                            {{ $label }}
+                        </a>
+                    @endif
                 @endforeach
+
+                <button type="button" class="dashboard-range-pill {{ $filters['active'] === 'custom' ? 'active' : '' }}"
+                    data-bs-toggle="modal" data-bs-target="#customRangeModal">
+                    <i class="fa-solid fa-calendar-days"></i> {{ __('dashboard.custom-range') }}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="customRangeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="{{ route('dashboard.home') }}" method="GET" class="modal-content">
+                    <input type="hidden" name="range" value="custom">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('dashboard.custom-range') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-1">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('dashboard.from-date') }}</label>
+                                <input type="date" name="from" class="form-control"
+                                    value="{{ $filters['custom_from'] ?? '' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('dashboard.to-date') }}</label>
+                                <input type="date" name="to" class="form-control"
+                                    value="{{ $filters['custom_to'] ?? '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            {{ __('dashboard.close') }}
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            {{ __('dashboard.apply') }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

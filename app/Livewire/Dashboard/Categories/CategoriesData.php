@@ -63,6 +63,15 @@ class CategoriesData extends Component
         $this->dispatch('categoryDelete', id: $id);
     }
 
+    public function reorder(array $orderedIds): void
+    {
+        foreach ($orderedIds as $position => $id) {
+            Category::query()->whereKey($id)->update(['sort_order' => $position + 1]);
+        }
+
+        $this->dispatch('notify', type: 'success', message: __('dashboard.update-successfully'));
+    }
+
     public function updateStatus(int $itemId, int $newStatus): void
     {
         $item = Category::query()->find($itemId);

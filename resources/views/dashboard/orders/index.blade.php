@@ -6,7 +6,19 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">{{ __('dashboard.orders') }}</h4>
+                    <h4 class="card-title">{{ __('dashboard.orders-board') }}</h4>
+                </div>
+
+                <div class="card-body">
+                    @livewire('dashboard.orders.orders-board')
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">{{ __('dashboard.orders-advanced-search') }}</h4>
                 </div>
 
                 <div class="card-body">

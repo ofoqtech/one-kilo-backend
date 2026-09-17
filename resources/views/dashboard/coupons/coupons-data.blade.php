@@ -36,8 +36,10 @@
                 <tr>
                     <th>#</th>
                     <th>{{ __('dashboard.code') }}</th>
+                    <th>{{ __('dashboard.applies-to') }}</th>
                     <th>{{ __('dashboard.type') }}</th>
                     <th>{{ __('dashboard.value') }}</th>
+                    <th>{{ __('dashboard.audience') }}</th>
                     <th>{{ __('dashboard.minimum-order-amount') }}</th>
                     <th>{{ __('dashboard.maximum-discount-amount') }}</th>
                     <th>{{ __('dashboard.usage-limit') }}</th>
@@ -56,12 +58,40 @@
                         <td>{{ $items->firstItem() + $index }}</td>
                         <td><span class="badge bg-light-primary">{{ $item->code }}</span></td>
                         <td>
-                            <span class="badge bg-light-info">
-                                {{ $item->type === 'percentage' ? __('dashboard.percentage') : __('dashboard.amount') }}
+                            <span class="badge bg-light-secondary">
+                                {{ $item->applies_to === 'delivery_fee' ? __('dashboard.applies-to-delivery-fee') : __('dashboard.applies-to-subtotal') }}
                             </span>
                         </td>
                         <td>
-                            {{ $item->type === 'percentage' ? rtrim(rtrim(number_format((float) $item->value, 2), '0'), '.') . '%' : number_format((float) $item->value, 2) }}
+                            @if ($item->applies_to === 'delivery_fee')
+                                <span class="badge bg-light-info">
+                                    {{ $item->delivery_discount_type === 'free' ? __('dashboard.free-delivery') : ($item->delivery_discount_type === 'percentage' ? __('dashboard.percentage') : __('dashboard.amount')) }}
+                                </span>
+                            @else
+                                <span class="badge bg-light-info">
+                                    {{ $item->type === 'percentage' ? __('dashboard.percentage') : __('dashboard.amount') }}
+                                </span>
+                            @endif
+                        </td>
+                        <td>
+                            @if ($item->applies_to === 'delivery_fee' && $item->delivery_discount_type === 'free')
+                                -
+                            @elseif ($item->applies_to === 'delivery_fee')
+                                {{ $item->delivery_discount_type === 'percentage' ? rtrim(rtrim(number_format((float) $item->value, 2), '0'), '.') . '%' : number_format((float) $item->value, 2) }}
+                            @else
+                                {{ $item->type === 'percentage' ? rtrim(rtrim(number_format((float) $item->value, 2), '0'), '.') . '%' : number_format((float) $item->value, 2) }}
+                            @endif
+                        </td>
+                        <td>
+                            <span class="badge bg-light-warning">
+                                @if ($item->audience === 'regions')
+                                    {{ __('dashboard.audience-regions') }}
+                                @elseif ($item->audience === 'categories')
+                                    {{ __('dashboard.audience-categories') }}
+                                @else
+                                    {{ __('dashboard.audience-all') }}
+                                @endif
+                            </span>
                         </td>
                         <td>{{ $item->min_order_amount !== null ? number_format((float) $item->min_order_amount, 2) : '-' }}</td>
                         <td>{{ $item->max_discount_amount !== null ? number_format((float) $item->max_discount_amount, 2) : '-' }}</td>
@@ -97,7 +127,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="13" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
+                        <td colspan="16" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
                     </tr>
                 @endforelse
             </tbody>

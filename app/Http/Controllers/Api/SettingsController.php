@@ -7,6 +7,7 @@ use App\Models\Faq;
 use App\Models\About;
 use App\Models\Terms;
 use App\Models\Banner;
+use App\Models\AppPopup;
 use App\Models\Contact;
 use App\Models\Privacy;
 use App\Models\Setting;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AboutResource;
 use App\Http\Resources\TermsResource;
 use App\Http\Resources\BannerResource;
+use App\Http\Resources\AppPopupResource;
 use App\Http\Resources\PrivacyResource;
 use App\Http\Resources\SettingsResource;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -116,5 +118,21 @@ class SettingsController extends Controller
         return ApiResponse::sendResponse(200, __('front.retrieved-successfully'), BannerResource::collection($banners));
     }
 
+    public function activePopup()
+    {
+        $popup = AppPopup::query()
+            ->active()
+            ->currentlyRunning()
+            ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('sort_order')
+            ->latest('id')
+            ->first();
+
+        if (! $popup) {
+            return ApiResponse::sendResponse(404, __('front.no-active-popup-found'), []);
+        }
+
+        return ApiResponse::sendResponse(200, __('front.retrieved-successfully'), new AppPopupResource($popup));
+    }
 
 }

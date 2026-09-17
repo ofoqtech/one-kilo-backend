@@ -31,7 +31,11 @@ class AuthController extends Controller implements HasMiddleware
     public function home(Request $request)
     {
         return view('dashboard.dashboard', [
-            'analytics' => $this->homeDashboardService->build((string) $request->query('range', '30d')),
+            'analytics' => $this->homeDashboardService->build(
+                (string) $request->query('range', '30d'),
+                $request->query('from'),
+                $request->query('to')
+            ),
         ]);
     } // End Method
     public function login()

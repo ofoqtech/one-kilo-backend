@@ -28,6 +28,8 @@ class OrderObserver
                 'total' => $order->total,
                 'created_at' => $order->created_at->toDateTimeString(),
             ]);
+
+        OrderCreatedEvent::dispatch($order);
     }
 
     /**

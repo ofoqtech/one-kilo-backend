@@ -73,4 +73,14 @@ class Delivery extends Authenticatable
         return $this->morphMany(Notification::class, 'notifiable');
     }
 
+    public function shifts()
+    {
+        return $this->morphMany(Shift::class, 'shiftable');
+    }
+
+    public function currentShift(): ?Shift
+    {
+        return $this->shifts()->open()->latest('started_at')->first();
+    }
+
 }

@@ -54,7 +54,7 @@ class CheckoutService
             $this->assertAddressIsReadyForCheckout($address);
             $this->assertCartIsReadyForCheckout($cart);
 
-            $coupon = $this->resolveCheckoutCoupon($cart, $userId);
+            $coupon = $this->resolveCheckoutCoupon($cart, $userId, $address);
             $totals = $this->calculateTotals($cart, $address, $coupon);
             $order = $this->createOrder($userId, $address, $cart, $coupon, $totals, $data);
 
@@ -198,18 +198,22 @@ class CheckoutService
     {
         $subtotal = round($cart->subtotal(), 2);
         $discountAmount = $coupon ? $coupon->calculateDiscount($subtotal) : 0.0;
-        $deliveryFee = round((float) ($address->region?->shipping_price ?? 0), 2);
+        $deliveryFeeBeforeDiscount = round((float) ($address->region?->shipping_price ?? 0), 2);
+        $deliveryDiscount = $coupon ? $coupon->calculateDeliveryDiscount($deliveryFeeBeforeDiscount) : 0.0;
+        $deliveryFee = round(max($deliveryFeeBeforeDiscount - $deliveryDiscount, 0), 2);
         $total = round(max($subtotal - $discountAmount + $deliveryFee, 0), 2);
 
         return [
             'subtotal' => $subtotal,
             'discount_amount' => $discountAmount,
             'delivery_fee' => $deliveryFee,
+            'delivery_fee_before_discount' => $deliveryFeeBeforeDiscount,
+            'delivery_discount' => $deliveryDiscount,
             'total' => $total,
         ];
     }
 
-    private function resolveCheckoutCoupon(Cart $cart, int $userId): ?Coupon
+    private function resolveCheckoutCoupon(Cart $cart, int $userId, Address $address): ?Coupon
     {
         if (! $cart->coupon_id) {
             return null;
@@ -249,6 +253,24 @@ class CheckoutService
                 __('front.coupon-minimum-order-not-met'),
                 422,
                 ['coupon' => [__('front.coupon-minimum-order-not-met')]]
+            );
+        }
+
+        if (! $coupon->canApplyToRegion($address->region_id)) {
+            throw new ApiBusinessException(
+                __('front.coupon-not-available-in-region'),
+                422,
+                ['coupon' => [__('front.coupon-not-available-in-region')]]
+            );
+        }
+
+        $cartCategoryIds = $cart->items->pluck('product.category_id')->filter()->unique()->values()->all();
+
+        if (! $coupon->canApplyToCategories($cartCategoryIds)) {
+            throw new ApiBusinessException(
+                __('front.coupon-not-applicable-to-cart-items'),
+                422,
+                ['coupon' => [__('front.coupon-not-applicable-to-cart-items')]]
             );
         }
 
