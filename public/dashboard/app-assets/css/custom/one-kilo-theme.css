@@ -26,7 +26,7 @@
     --ok-shadow-lg: 0 16px 40px rgba(25, 70, 185, 0.14);
     --ok-radius: 14px;
     --ok-radius-sm: 10px;
-    --ok-gradient: linear-gradient(135deg, var(--ok-blue) 0%, #2B5FE0 60%, var(--ok-red) 150%);
+    --ok-gradient: linear-gradient(120deg, var(--ok-blue) 0%, var(--ok-blue) 55%, var(--ok-red) 100%);
     --ok-gradient-soft: linear-gradient(135deg, rgba(25, 70, 185, 0.10) 0%, rgba(233, 0, 0, 0.06) 100%);
 
     color-scheme: light;
@@ -475,6 +475,7 @@ html[data-ok-theme="dark"] #ok-theme-toggle .fa-sun { display: inline-block; }
     font-size: 2rem;
     font-weight: 800;
     margin-bottom: .5rem;
+    color: #ffffff !important;
 }
 
 .ok-auth-brand-subtitle {

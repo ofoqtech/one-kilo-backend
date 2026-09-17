@@ -720,7 +720,7 @@
         .dashboard-range-pill:hover,
         .dashboard-range-pill.active {
             color: #ffffff;
-            background: linear-gradient(135deg, #1946B9 0%, #2B5FE0 60%, #E90000 150%);
+            background: linear-gradient(120deg, #1946B9 0%, #1946B9 55%, #E90000 100%);
             box-shadow: 0 10px 20px rgba(25, 70, 185, 0.28);
         }
 
@@ -738,7 +738,7 @@
             color: #ffffff;
             background:
                 radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 32%),
-                linear-gradient(135deg, #1946B9 0%, #2B5FE0 55%, #E90000 140%);
+                linear-gradient(120deg, #1946B9 0%, #1946B9 55%, #E90000 100%);
         }
 
         .analytics-hero-card h3,
@@ -1184,7 +1184,7 @@
 
         .analytics-progress .progress-bar {
             border-radius: 999px;
-            background: linear-gradient(90deg, #1946B9 0%, #E90000 150%);
+            background: linear-gradient(90deg, #1946B9 0%, #E90000 100%);
         }
 
         .min-w-0 {
