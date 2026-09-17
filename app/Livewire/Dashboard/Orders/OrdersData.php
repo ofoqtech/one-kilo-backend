@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Region;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,6 +17,13 @@ class OrdersData extends Component
     use WithPagination;
 
     protected $paginationTheme = 'bootstrap';
+
+    #[On('echo:orders-dashboard,order.created')]
+    #[On('echo:orders-dashboard,order.status-changed')]
+    public function refreshList(): void
+    {
+        // no-op: triggers a re-render on the next Livewire request
+    }
 
     public string $search = '';
 

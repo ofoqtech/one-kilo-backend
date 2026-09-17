@@ -13,6 +13,8 @@ class Coupon extends Model
     protected $fillable = [
         'code',
         'type',
+        'applies_to',
+        'delivery_discount_type',
         'value',
         'min_order_amount',
         'max_discount_amount',
@@ -22,6 +24,7 @@ class Coupon extends Model
         'starts_at',
         'expires_at',
         'status',
+        'audience',
     ];
 
     protected function casts(): array
@@ -37,6 +40,79 @@ class Coupon extends Model
             'expires_at' => 'datetime',
             'status' => 'boolean',
         ];
+    }
+
+    public const APPLIES_TO_SUBTOTAL = 'subtotal';
+    public const APPLIES_TO_DELIVERY_FEE = 'delivery_fee';
+
+    public const AUDIENCE_ALL = 'all';
+    public const AUDIENCE_CATEGORIES = 'categories';
+    public const AUDIENCE_REGIONS = 'regions';
+
+    public function regions(): BelongsToMany
+    {
+        return $this->belongsToMany(Region::class, 'coupon_region');
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'coupon_category');
+    }
+
+    public function isAppliesToDeliveryFee(): bool
+    {
+        return $this->applies_to === self::APPLIES_TO_DELIVERY_FEE;
+    }
+
+    public function canApplyToRegion(?int $regionId): bool
+    {
+        if ($this->audience !== self::AUDIENCE_REGIONS) {
+            return true;
+        }
+
+        if ($regionId === null) {
+            return false;
+        }
+
+        return $this->relationLoaded('regions')
+            ? $this->regions->contains('id', $regionId)
+            : $this->regions()->whereKey($regionId)->exists();
+    }
+
+    public function canApplyToCategories(array $categoryIds): bool
+    {
+        if ($this->audience !== self::AUDIENCE_CATEGORIES) {
+            return true;
+        }
+
+        if ($categoryIds === []) {
+            return false;
+        }
+
+        $allowedIds = $this->relationLoaded('categories')
+            ? $this->categories->pluck('id')->all()
+            : $this->categories()->pluck('categories.id')->all();
+
+        return count(array_intersect($categoryIds, $allowedIds)) > 0;
+    }
+
+    public function calculateDeliveryDiscount(float $deliveryFee): float
+    {
+        if (! $this->isAppliesToDeliveryFee() || $deliveryFee <= 0) {
+            return 0.0;
+        }
+
+        if ($this->delivery_discount_type === 'free') {
+            return round($deliveryFee, 2);
+        }
+
+        $value = (float) $this->value;
+
+        $discount = $this->delivery_discount_type === 'percentage'
+            ? ($deliveryFee * $value / 100)
+            : min($deliveryFee, $value);
+
+        return round(max(min($discount, $deliveryFee), 0), 2);
     }
 
     public function scopeActive(Builder $query): Builder
@@ -105,6 +181,10 @@ class Coupon extends Model
 
     public function calculateDiscount(float $subtotal): float
     {
+        if ($this->isAppliesToDeliveryFee()) {
+            return 0.0;
+        }
+
         if (! $this->canApplyToSubtotal($subtotal) || $subtotal <= 0) {
             return 0.0;
         }

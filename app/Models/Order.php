@@ -150,6 +150,7 @@ class Order extends Model
         'address_id',
         'coupon_id',
         'delivery_id',
+        'cashier_shift_id',
         'wallet_transaction_id',
         'order_number',
         'status',
@@ -322,6 +323,11 @@ class Order extends Model
     public function delivery(): BelongsTo
     {
         return $this->belongsTo(Delivery::class);
+    }
+
+    public function cashierShift(): BelongsTo
+    {
+        return $this->belongsTo(Shift::class, 'cashier_shift_id');
     }
 
     public function walletTransaction(): BelongsTo

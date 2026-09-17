@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CancelOrderRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Delivery;
 use App\Models\Order;
@@ -61,6 +62,36 @@ class OrdersController extends Controller
 
 
         flash()->success(__('dashboard.status-updated-successfully'));
+
+        return back();
+    }
+
+    public function cancel(CancelOrderRequest $request, Order $order)
+    {
+        $previousDelivery = $order->delivery;
+
+        $this->orderService->cancel(
+            $order,
+            (string) $request->string('reason'),
+            $request->user('admin')
+        );
+
+        $cancelData = Order::STATUS_MESSAGES[Order::STATUS_CANCELED] ?? null;
+
+        if ($cancelData && $order->user) {
+            $this->firebaseService->sendNotification($order->user->fcm_token ?? '', $cancelData['message']['ar'], $cancelData['title']['ar']);
+            $this->firebaseService->saveNotification($order->user, $order->id, $cancelData['title'], $cancelData['message']);
+        }
+
+        if ($previousDelivery) {
+            $title = ['en' => 'Order Canceled', 'ar' => 'تم إلغاء الطلب'];
+            $message = ['en' => 'An order assigned to you has been canceled', 'ar' => 'تم إلغاء طلب كان مسندًا إليك'];
+
+            $this->firebaseService->sendNotification($previousDelivery->fcm_token ?? '', $message['ar'], $title['ar']);
+            $this->firebaseService->saveNotification($previousDelivery, $order->id, $title, $message);
+        }
+
+        flash()->success(__('dashboard.order-canceled-successfully'));
 
         return back();
     }

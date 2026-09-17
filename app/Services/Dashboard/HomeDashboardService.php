@@ -13,9 +13,9 @@ class HomeDashboardService
     {
     }
 
-    public function build(string $range = '30d'): array
+    public function build(string $range = '30d', ?string $customFrom = null, ?string $customTo = null): array
     {
-        $filter = $this->resolveRange($range);
+        $filter = $this->resolveRange($range, $customFrom, $customTo);
         $salesStatuses = $this->revenueEligibleStatuses();
         $kpis = $this->homeDashboardRepository->getKpis($filter['start'], $filter['end'], $salesStatuses);
         $topProducts = $this->homeDashboardRepository->getTopProducts($filter['start'], $filter['end'], $salesStatuses, 6);
@@ -47,11 +47,17 @@ class HomeDashboardService
                 'active' => $filter['key'],
                 'label' => __('dashboard.' . $filter['label_key']),
                 'options' => [
+                    'today' => __('dashboard.today'),
+                    'yesterday' => __('dashboard.yesterday'),
+                    'last_2_days' => __('dashboard.last-2-days'),
                     '7d' => __('dashboard.last-7-days'),
                     '30d' => __('dashboard.last-30-days'),
                     '90d' => __('dashboard.last-90-days'),
                     'this_month' => __('dashboard.this-month'),
+                    'custom' => __('dashboard.custom-range'),
                 ],
+                'custom_from' => $filter['key'] === 'custom' ? $filter['start']->format('Y-m-d') : null,
+                'custom_to' => $filter['key'] === 'custom' ? $filter['end']->format('Y-m-d') : null,
             ],
             'kpis' => $kpis,
             'hero' => [
@@ -92,12 +98,51 @@ class HomeDashboardService
         return Order::salesStatuses();
     }
 
-    private function resolveRange(string $range): array
+    private function resolveRange(string $range, ?string $customFrom = null, ?string $customTo = null): array
     {
         $now = now();
-        $key = in_array($range, ['7d', '30d', '90d', 'this_month'], true) ? $range : '30d';
+        $validRanges = ['today', 'yesterday', 'last_2_days', '7d', '30d', '90d', 'this_month', 'custom'];
+        $key = in_array($range, $validRanges, true) ? $range : '30d';
+
+        if ($key === 'custom' && $customFrom && $customTo) {
+            try {
+                $start = Carbon::parse($customFrom)->startOfDay();
+                $end = Carbon::parse($customTo)->endOfDay();
+
+                if ($start->lte($end)) {
+                    return [
+                        'key' => 'custom',
+                        'label_key' => 'custom-range',
+                        'start' => $start,
+                        'end' => $end,
+                    ];
+                }
+            } catch (\Throwable) {
+                // fall through to default below
+            }
+
+            $key = '30d';
+        }
 
         return match ($key) {
+            'today' => [
+                'key' => 'today',
+                'label_key' => 'today',
+                'start' => $now->copy()->startOfDay(),
+                'end' => $now->copy()->endOfDay(),
+            ],
+            'yesterday' => [
+                'key' => 'yesterday',
+                'label_key' => 'yesterday',
+                'start' => $now->copy()->subDay()->startOfDay(),
+                'end' => $now->copy()->subDay()->endOfDay(),
+            ],
+            'last_2_days' => [
+                'key' => 'last_2_days',
+                'label_key' => 'last-2-days',
+                'start' => $now->copy()->startOfDay()->subDay(),
+                'end' => $now->copy()->endOfDay(),
+            ],
             '7d' => [
                 'key' => '7d',
                 'label_key' => 'last-7-days',

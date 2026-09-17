@@ -79,6 +79,15 @@ class ProductsData extends Component
         $this->dispatch('productDelete', id: $id);
     }
 
+    public function reorder(array $orderedIds): void
+    {
+        foreach ($orderedIds as $position => $id) {
+            Product::query()->whereKey($id)->update(['sort_order' => $position + 1]);
+        }
+
+        $this->dispatch('notify', type: 'success', message: __('dashboard.update-successfully'));
+    }
+
     public function updateStatus(int $itemId, int $newStatus): void
     {
         $item = Product::query()->find($itemId);
@@ -258,6 +267,8 @@ class ProductsData extends Component
                     });
                 });
             })
+            ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('sort_order')
             ->latest('id')
             ->paginate($this->perPage);
 

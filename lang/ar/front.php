@@ -1,6 +1,8 @@
 <?php
 return [
 
+    'no-active-popup-found' => 'لا يوجد إشعار أو عرض نشط حاليًا',
+    'retrieved-successfully' => 'تم الاسترجاع بنجاح',
     'home' => 'الرئيسية',
     'shop' => 'تسوق',
     'event' => 'حفلات',
@@ -236,6 +238,8 @@ return [
     'coupon-usage-limit-reached'                => 'هذا الكوبون وصل إلى الحد الأقصى للاستخدام',
     'coupon-user-usage-limit-reached'           => 'لقد استخدمت هذا الكوبون بالحد المسموح',
     'coupon-minimum-order-not-met'              => 'لا تحقق السلة الحد الأدنى لتطبيق الكوبون',
+    'coupon-not-available-in-region'            => 'هذا الكوبون غير متاح في منطقتك',
+    'coupon-not-applicable-to-cart-items'       => 'هذا الكوبون لا ينطبق على المنتجات الموجودة في سلتك',
     'cart-product-not-available'                => 'هذا المنتج غير متاح حالياً',
     'cart-product-out-of-stock'                 => 'هذا المنتج غير متوفر في المخزون',
     'cart-insufficient-stock'                   => 'الكمية المطلوبة أكبر من المخزون المتاح',

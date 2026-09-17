@@ -104,6 +104,7 @@ Route::group([
         Route::get('orders/{order}/assign-delivery', [OrdersController::class, 'assignDelivery'])
             ->name('orders.assign-delivery');
         Route::post('orders/{order}/status', [OrdersController::class, 'updateStatus'])->middleware('can:orders_change_status')->name('orders.status.update');
+        Route::post('orders/{order}/cancel', [OrdersController::class, 'cancel'])->middleware('can:orders_change_status')->name('orders.cancel');
 
         Route::get('orders/{order}/assign-delivery', [OrdersController::class, 'assignDelivery'])
             ->name('orders.assign-delivery');
@@ -126,6 +127,7 @@ Route::group([
 
         ############################### settings Routes ############################################
         Route::get('banners',             [SettingsController::class, 'banners'])->middleware('can:settings')->name('banners');
+        Route::get('popups',              [SettingsController::class, 'popups'])->middleware('can:settings')->name('popups');
         Route::get('settings',            [SettingsController::class, 'genralSetting'])->middleware('can:settings')->name('settings');
         Route::get('abouts',              [SettingsController::class, 'aboutSetting'])->middleware('can:settings')->name('about.setting');
         Route::get('faqs',                [SettingsController::class, 'faqs'])->middleware('can:settings')->name('faqs.setting');
@@ -139,6 +141,11 @@ Route::group([
         Route::get('delivery',                  [\App\Http\Controllers\Dashboard\DeliveryController::class, 'index'])->middleware('can:users')->name('deliveries.index');
         Route::get('delivery/profile/{id}',      [\App\Http\Controllers\Dashboard\DeliveryController::class, 'userProfile'])->middleware('can:users')->name('deliveries.profile');
         ############################### End Users Routes #########################################
+
+        ############################### Shifts Routes ############################################
+        Route::get('shifts',            [\App\Http\Controllers\Dashboard\ShiftsController::class, 'index'])->name('shifts.index');
+        Route::get('shifts/{shift}',    [\App\Http\Controllers\Dashboard\ShiftsController::class, 'show'])->name('shifts.show');
+        ############################### End Shifts Routes #########################################
 
     });
 });

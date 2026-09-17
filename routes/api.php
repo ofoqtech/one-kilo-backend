@@ -27,6 +27,7 @@ Route::get('/faq',          [SettingsController::class, 'faq']);
 Route::post('/contact',     [SettingsController::class, 'contact']);
 Route::get('/banners',      [SettingsController::class, 'banners']);
 Route::get('/workingHours',      [SettingsController::class, 'workingHours']);
+Route::get('/app-popup',    [SettingsController::class, 'activePopup']);
 ## ================== SETTINGS ================== ##
 
 ## ================== LOOKUPS (Mobile) ================== ##

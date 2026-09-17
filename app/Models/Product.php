@@ -22,6 +22,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
+        'sort_order',
         'name',
         'slug',
         'short_description',
@@ -47,6 +48,7 @@ class Product extends Model
             'discount_starts_at' => 'datetime',
             'discount_ends_at' => 'datetime',
             'stock' => 'integer',
+            'sort_order' => 'integer',
             'is_featured' => 'boolean',
             'status' => 'boolean',
             'has_variants' => 'boolean',

@@ -99,6 +99,11 @@
             </li>
             @endcan
 
+            <li class="nav-item @yield('shifts-active')"><a class="d-flex align-items-center"
+                    href="{{ route('dashboard.shifts.index') }}"><i class="fa-solid fa-clock"></i><span
+                        class="menu-title text-truncate">{{ __('dashboard.shifts') }}</span>
+                </a>
+            </li>
 
             @can('countries')
                 <li class="nav-item @yield('countries-active')"><a class="d-flex align-items-center"
@@ -175,6 +180,13 @@
                                 href="{{ route('dashboard.banners') }}"><i class="fa-solid fa-circle"></i><span
                                     class="menu-item text-truncate"
                                     data-i18n="Roles">{{ __('dashboard.banners') }}</span></a>
+                        </li>
+                    </ul>
+                    <ul class="menu-content">
+                        <li><a class="@yield('popups-active') d-flex align-items-center"
+                                href="{{ route('dashboard.popups') }}"><i class="fa-solid fa-circle"></i><span
+                                    class="menu-item text-truncate"
+                                    data-i18n="Popups">{{ __('dashboard.app-popups') }}</span></a>
                         </li>
                     </ul>
                     <ul class="menu-content">

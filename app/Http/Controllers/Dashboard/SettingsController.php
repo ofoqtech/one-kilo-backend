@@ -53,6 +53,11 @@ class SettingsController extends Controller
         return view('dashboard.settings.banners.index');
     }
 
+    public function popups()
+    {
+        return view('dashboard.settings.popups.index');
+    }
+
     public function contacts()
     {
         return view('dashboard.contacts.index');

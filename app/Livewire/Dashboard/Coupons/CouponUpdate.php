@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Dashboard\Coupons;
 
+use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Region;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -14,7 +16,11 @@ class CouponUpdate extends Component
 
     public string $code = '';
 
+    public string $applies_to = 'subtotal';
+
     public string $type = 'amount';
+
+    public string $delivery_discount_type = 'amount';
 
     public string $value = '';
 
@@ -34,6 +40,12 @@ class CouponUpdate extends Component
 
     public int $used_count = 0;
 
+    public string $audience = 'all';
+
+    public array $region_ids = [];
+
+    public array $category_ids = [];
+
     protected $listeners = [
         'couponUpdate' => 'loadItem',
     ];
@@ -41,11 +53,14 @@ class CouponUpdate extends Component
     public function rules(): array
     {
         $id = $this->couponId ?? 0;
+        $isDelivery = $this->applies_to === 'delivery_fee';
 
         return [
             'code' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('coupons', 'code')->ignore($id)],
-            'type' => ['required', Rule::in(['amount', 'percentage'])],
-            'value' => ['required', 'numeric', 'gt:0'],
+            'applies_to' => ['required', Rule::in(['subtotal', 'delivery_fee'])],
+            'type' => [Rule::requiredIf(! $isDelivery), Rule::in(['amount', 'percentage'])],
+            'delivery_discount_type' => [Rule::requiredIf($isDelivery), Rule::in(['amount', 'percentage', 'free'])],
+            'value' => [Rule::requiredIf(fn () => ! ($isDelivery && $this->delivery_discount_type === 'free')), 'nullable', 'numeric', 'gt:0'],
             'min_order_amount' => ['nullable', 'numeric', 'min:0'],
             'max_discount_amount' => ['nullable', 'numeric', 'gt:0'],
             'usage_limit' => ['nullable', 'integer', 'min:1'],
@@ -53,12 +68,34 @@ class CouponUpdate extends Component
             'starts_at' => ['nullable', 'date'],
             'expires_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'status' => ['required', 'boolean'],
+            'audience' => ['required', Rule::in(['all', 'categories', 'regions'])],
+            'region_ids' => [Rule::requiredIf($this->audience === 'regions'), 'array'],
+            'region_ids.*' => ['integer', 'exists:regions,id'],
+            'category_ids' => [Rule::requiredIf($this->audience === 'categories'), 'array'],
+            'category_ids.*' => ['integer', 'exists:categories,id'],
         ];
+    }
+
+    public function updatedAudience(): void
+    {
+        $this->region_ids = [];
+        $this->category_ids = [];
+        $this->resetErrorBag();
+    }
+
+    public function getRegionsProperty()
+    {
+        return Region::query()->orderBy('name')->get(['id', 'name']);
+    }
+
+    public function getCategoriesProperty()
+    {
+        return Category::query()->orderBy('name')->get(['id', 'name']);
     }
 
     public function loadItem(int $id): void
     {
-        $item = Coupon::query()->find($id);
+        $item = Coupon::query()->with(['regions:id', 'categories:id'])->find($id);
 
         if (! $item) {
             $this->dispatch('notify', type: 'error', message: __('dashboard.no-data'));
@@ -68,7 +105,9 @@ class CouponUpdate extends Component
 
         $this->couponId = $item->id;
         $this->code = $item->code;
+        $this->applies_to = $item->applies_to;
         $this->type = $item->type;
+        $this->delivery_discount_type = $item->delivery_discount_type ?? 'amount';
         $this->value = (string) $item->value;
         $this->min_order_amount = $item->min_order_amount !== null ? (string) $item->min_order_amount : '';
         $this->max_discount_amount = $item->max_discount_amount !== null ? (string) $item->max_discount_amount : '';
@@ -78,6 +117,9 @@ class CouponUpdate extends Component
         $this->expires_at = optional($item->expires_at)->format('Y-m-d\TH:i');
         $this->status = (bool) $item->status;
         $this->used_count = (int) $item->used_count;
+        $this->audience = $item->audience;
+        $this->region_ids = $item->regions->pluck('id')->all();
+        $this->category_ids = $item->categories->pluck('id')->all();
         $this->resetValidation();
 
         $this->dispatch('updateModalToggle');
@@ -102,6 +144,17 @@ class CouponUpdate extends Component
 
         $coupon->update($this->payload());
 
+        if ($this->audience === 'regions') {
+            $coupon->regions()->sync($this->region_ids);
+            $coupon->categories()->sync([]);
+        } elseif ($this->audience === 'categories') {
+            $coupon->categories()->sync($this->category_ids);
+            $coupon->regions()->sync([]);
+        } else {
+            $coupon->regions()->sync([]);
+            $coupon->categories()->sync([]);
+        }
+
         $this->dispatch('notify', type: 'success', message: __('dashboard.coupon-update-successfully'));
         $this->dispatch('updateModalToggle');
         $this->dispatch('refreshData')->to(CouponsData::class);
@@ -109,12 +162,18 @@ class CouponUpdate extends Component
 
     private function payload(): array
     {
+        $isDelivery = $this->applies_to === 'delivery_fee';
+
         return [
             'code' => $this->code,
-            'type' => $this->type,
-            'value' => round((float) $this->value, 2),
+            'applies_to' => $this->applies_to,
+            'type' => $isDelivery ? 'amount' : $this->type,
+            'delivery_discount_type' => $isDelivery ? $this->delivery_discount_type : null,
+            'value' => $isDelivery && $this->delivery_discount_type === 'free'
+                ? 0
+                : round((float) $this->value, 2),
             'min_order_amount' => $this->nullableFloat($this->min_order_amount),
-            'max_discount_amount' => $this->type === 'percentage'
+            'max_discount_amount' => (! $isDelivery && $this->type === 'percentage')
                 ? $this->nullableFloat($this->max_discount_amount)
                 : null,
             'usage_limit' => $this->nullableInt($this->usage_limit),
@@ -122,12 +181,16 @@ class CouponUpdate extends Component
             'starts_at' => $this->nullableDateTime($this->starts_at),
             'expires_at' => $this->nullableDateTime($this->expires_at),
             'status' => $this->status,
+            'audience' => $this->audience,
         ];
     }
 
     private function passesBusinessRules(Coupon $coupon): bool
     {
-        if ($this->type === 'percentage' && (float) $this->value > 100) {
+        $isDelivery = $this->applies_to === 'delivery_fee';
+        $percentageType = $isDelivery ? $this->delivery_discount_type === 'percentage' : $this->type === 'percentage';
+
+        if ($percentageType && (float) $this->value > 100) {
             $this->addError(
                 'value',
                 __('validation.max.numeric', ['attribute' => __('dashboard.percentage'), 'max' => 100])
