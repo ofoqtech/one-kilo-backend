@@ -237,25 +237,13 @@ body {
 
 .main-menu .navigation > li > a {
     color: var(--ok-text);
-    margin: 2px 10px;
-    border-radius: var(--ok-radius-sm);
 }
 
 .main-menu .navigation > li > a > i:first-child {
-    width: 30px;
-    height: 30px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--ok-surface-alt);
-    border-radius: 9px;
-    font-size: .9rem;
     color: var(--ok-blue);
-    margin-inline-end: .3rem;
 }
 
 .main-menu .navigation > li.active > a > i:first-child {
-    background: rgba(255, 255, 255, 0.22);
     color: #fff;
 }
 
