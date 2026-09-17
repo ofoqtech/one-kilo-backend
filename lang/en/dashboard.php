@@ -2,6 +2,10 @@
 return [
 
     'title-login' => 'Welcome to dashboard login! ðŸ‘‹',
+    'auth-brand-subtitle' => 'A complete management platform for your store and delivery agents, moment by moment.',
+    'auth-point-realtime' => 'Real-time order updates',
+    'auth-point-analytics' => 'Live analytics and reports',
+    'auth-point-delivery' => 'Full delivery agent management',
     'back' => 'Back',
     'home' => 'Home',
     'roles' => 'Roles',
@@ -622,6 +626,7 @@ return [
     'cashiers' => 'Cashiers',
     'cashier' => 'Cashier',
     'delivery' => 'Delivery Agent',
+    'toggle-dark-mode' => 'Dark Mode',
     'change-status' => 'Change Status',
     'next-status' => 'Next Status',
     'old-status' => 'Old Status',

@@ -2,6 +2,10 @@
 return [
 
     'title-login' => 'مرحبا بك في صفحة تسجيل الأدمن👋',
+    'auth-brand-subtitle' => 'منصة إدارة متكاملة لمتجرك ومندوبي التوصيل، لحظة بلحظة.',
+    'auth-point-realtime' => 'تحديث لحظي للطلبات',
+    'auth-point-analytics' => 'إحصائيات وتقارير مباشرة',
+    'auth-point-delivery' => 'إدارة كاملة لمناديب التوصيل',
     'back' => 'عوده للخلف',
     'home' => 'الرئيسية',
     'roles' => 'الأدوار',
@@ -624,6 +628,7 @@ return [
     'cashiers' => 'الكاشير',
     'cashier' => 'كاشير',
     'delivery' => 'مندوب توصيل',
+    'toggle-dark-mode' => 'الوضع الليلي',
     'change-status' => 'تغيير الحالة',
     'next-status' => 'الحالة التالية',
     'old-status' => 'الحالة السابقة',

@@ -1,7 +1,8 @@
 @extends('dashboard.auth.partials.auth', ['title' => 'Login'])
 
 @section('content')
-    <h4 class="card-title mb-1 text-center">{{ __('dashboard.title-login') }}</h4>
+    <h4 class="card-title mb-50 fw-bolder">{{ __('dashboard.title-login') }}</h4>
+    <p class="text-muted mb-2">{{ __('dashboard.auth-brand-subtitle') }}</p>
 
     <form class="auth-login-form mt-2" action="{{ route('dashboard.login.post') }}" method="POST">
         @csrf

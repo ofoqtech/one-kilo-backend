@@ -232,15 +232,18 @@
                                         <span class="fw-bolder me-25">{{ __('dashboard.email') }}:</span>
                                         <span>{{ $order->user?->email ?? '-' }}</span>
                                     </li>
-                                    <li>
-                                        <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
-                                        <span>{{ $order->user?->phone ?? data_get($address, 'phone') ?? '-' }}</span>
+                                    <li class="d-flex align-items-center justify-content-between flex-wrap gap-50">
+                                        <div>
+                                            <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
+                                            <span>{{ $order->user?->phone ?? data_get($address, 'phone') ?? '-' }}</span>
+                                        </div>
                                         @php $customerPhone = $order->user?->phone ?? data_get($address, 'phone'); @endphp
                                         @if ($customerPhone)
                                             <a href="https://wa.me/{{ preg_replace('/\D/', '', $customerPhone) }}"
                                                 target="_blank" rel="noopener noreferrer"
-                                                class="btn btn-sm btn-light-success ms-50" title="{{ __('dashboard.contact-on-whatsapp') }}">
+                                                class="btn btn-sm btn-light-success ok-whatsapp-btn" title="{{ __('dashboard.contact-on-whatsapp') }}">
                                                 <i class="fa-brands fa-whatsapp"></i>
+                                                <span>{{ __('dashboard.contact-on-whatsapp') }}</span>
                                             </a>
                                         @endif
                                     </li>
@@ -261,14 +264,17 @@
                                             <span class="fw-bolder me-25">{{ __('dashboard.delivery-agent-name') }}:</span>
                                             <span>{{ $order->delivery->full_name }}</span>
                                         </li>
-                                        <li class="mb-75">
-                                            <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
-                                            <span>{{ $order->delivery->phone ?? '-' }}</span>
+                                        <li class="mb-75 d-flex align-items-center justify-content-between flex-wrap gap-50">
+                                            <div>
+                                                <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
+                                                <span>{{ $order->delivery->phone ?? '-' }}</span>
+                                            </div>
                                             @if ($order->delivery->phone)
                                                 <a href="https://wa.me/{{ preg_replace('/\D/', '', $order->delivery->phone) }}"
                                                     target="_blank" rel="noopener noreferrer"
-                                                    class="btn btn-sm btn-light-success ms-50" title="{{ __('dashboard.contact-on-whatsapp') }}">
+                                                    class="btn btn-sm btn-light-success ok-whatsapp-btn" title="{{ __('dashboard.contact-on-whatsapp') }}">
                                                     <i class="fa-brands fa-whatsapp"></i>
+                                                    <span>{{ __('dashboard.contact-on-whatsapp') }}</span>
                                                 </a>
                                             @endif
                                         </li>

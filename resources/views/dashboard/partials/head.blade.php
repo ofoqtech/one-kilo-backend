@@ -80,7 +80,19 @@
     {{-- <link href="{{ asset('vendor/file-input/themes/fa5/theme.min.css') }}" rel="stylesheet"> --}}
     {{-- end file input to upload image and show it --}}
 
+    {{-- One Kilo brand theme (loaded last so it overrides the vendor theme) --}}
+    <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/app-assets/css/custom/one-kilo-theme.css">
 
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('ok-theme');
+                if (saved === 'dark') {
+                    document.documentElement.setAttribute('data-ok-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
 
     @stack('css')
 </head>

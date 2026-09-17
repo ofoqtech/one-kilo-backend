@@ -72,6 +72,24 @@
 
 {{-- end file input to upload image and show it --}}
 
+<script>
+    (function () {
+        var toggle = document.getElementById('ok-theme-toggle');
+        if (!toggle) return;
+
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            var isDark = document.documentElement.getAttribute('data-ok-theme') === 'dark';
+            if (isDark) {
+                document.documentElement.removeAttribute('data-ok-theme');
+                try { localStorage.setItem('ok-theme', 'light'); } catch (err) {}
+            } else {
+                document.documentElement.setAttribute('data-ok-theme', 'dark');
+                try { localStorage.setItem('ok-theme', 'dark'); } catch (err) {}
+            }
+        });
+    })();
+</script>
 
 @auth('admin')
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>

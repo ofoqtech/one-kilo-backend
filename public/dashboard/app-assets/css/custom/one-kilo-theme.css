@@ -1,0 +1,622 @@
+/* =========================================================
+   One Kilo Dashboard — Brand Theme
+   هوية هايبر ون كيلو: أزرق ملكي + أحمر + Dark Mode
+   ========================================================= */
+
+:root {
+    --ok-blue: #1946B9;
+    --ok-blue-dark: #123380;
+    --ok-blue-light: #3E67D6;
+    --ok-red: #E90000;
+    --ok-red-dark: #B30000;
+    --ok-red-light: #FF3B3B;
+
+    --bs-primary: var(--ok-blue);
+    --bs-primary-rgb: 25, 70, 185;
+    --bs-danger: var(--ok-red);
+    --bs-danger-rgb: 233, 0, 0;
+
+    --ok-surface: #ffffff;
+    --ok-surface-alt: #F5F7FC;
+    --ok-body-bg: #EEF1F8;
+    --ok-border: #E3E8F5;
+    --ok-text: #1B2138;
+    --ok-text-muted: #6E7591;
+    --ok-shadow: 0 6px 24px rgba(25, 70, 185, 0.08);
+    --ok-shadow-lg: 0 16px 40px rgba(25, 70, 185, 0.14);
+    --ok-radius: 14px;
+    --ok-radius-sm: 10px;
+    --ok-gradient: linear-gradient(135deg, var(--ok-blue) 0%, #2B5FE0 60%, var(--ok-red) 150%);
+    --ok-gradient-soft: linear-gradient(135deg, rgba(25, 70, 185, 0.10) 0%, rgba(233, 0, 0, 0.06) 100%);
+
+    color-scheme: light;
+}
+
+html[data-ok-theme="dark"] {
+    --ok-surface: #171B2E;
+    --ok-surface-alt: #1E2338;
+    --ok-body-bg: #10131F;
+    --ok-border: #2A3050;
+    --ok-text: #EBEDF7;
+    --ok-text-muted: #9AA1C2;
+    --ok-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    --ok-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+body {
+    background: var(--ok-body-bg) !important;
+    color: var(--ok-text);
+    transition: background-color .25s ease, color .25s ease;
+}
+
+.content-body,
+.app-content {
+    background: transparent !important;
+}
+
+/* ---------- Cards ---------- */
+.card {
+    background-color: var(--ok-surface) !important;
+    border: 1px solid var(--ok-border) !important;
+    border-radius: var(--ok-radius) !important;
+    box-shadow: var(--ok-shadow) !important;
+    color: var(--ok-text);
+    transition: box-shadow .2s ease, transform .2s ease, background-color .25s ease;
+}
+
+.card:hover {
+    box-shadow: var(--ok-shadow-lg) !important;
+}
+
+.card-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--ok-border) !important;
+    padding: 1.25rem 1.5rem !important;
+}
+
+.card-header .card-title {
+    font-weight: 700;
+    color: var(--ok-text);
+    letter-spacing: -.01em;
+}
+
+.card-body {
+    padding: 1.5rem !important;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    border-radius: var(--ok-radius-sm) !important;
+    font-weight: 600 !important;
+    letter-spacing: .01em;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background: var(--ok-gradient) !important;
+    border: none !important;
+    box-shadow: 0 8px 20px rgba(25, 70, 185, 0.28);
+}
+
+.btn-primary:hover:not(.disabled):not(:disabled) {
+    filter: brightness(1.08);
+    box-shadow: 0 10px 26px rgba(25, 70, 185, 0.38);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--ok-red) 0%, var(--ok-red-dark) 100%) !important;
+    border: none !important;
+    box-shadow: 0 8px 20px rgba(233, 0, 0, 0.22);
+}
+
+.btn-outline-primary {
+    color: var(--ok-blue) !important;
+    border-color: var(--ok-blue) !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--ok-blue) !important;
+    border-color: var(--ok-blue) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #17B366 0%, #0E8C4E 100%) !important;
+    border: none !important;
+}
+
+/* WhatsApp quick-contact button */
+.ok-whatsapp-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: .4rem;
+    padding: .4rem .9rem !important;
+    border-radius: 999px !important;
+    background: #25D366 !important;
+    color: #ffffff !important;
+    font-size: .8rem;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+    white-space: nowrap;
+}
+
+.ok-whatsapp-btn i {
+    font-size: 15px;
+}
+
+.ok-whatsapp-btn:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    color: #ffffff !important;
+}
+
+/* ---------- Badges ---------- */
+.badge {
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    padding: .4em .8em !important;
+}
+
+.bg-light-primary { background: rgba(25, 70, 185, 0.12) !important; color: var(--ok-blue) !important; }
+.bg-light-danger { background: rgba(233, 0, 0, 0.12) !important; color: var(--ok-red) !important; }
+.bg-light-success { background: rgba(23, 179, 102, 0.14) !important; color: #0E8C4E !important; }
+.bg-light-warning { background: rgba(255, 159, 28, 0.14) !important; color: #B96A00 !important; }
+.bg-light-info { background: rgba(0, 158, 219, 0.14) !important; color: #0079A8 !important; }
+.bg-light-secondary { background: rgba(110, 117, 145, 0.14) !important; color: var(--ok-text-muted) !important; }
+
+/* ---------- Nav pills (range switcher / orders board tabs) ---------- */
+.nav-pills .nav-link {
+    border-radius: 999px !important;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+}
+
+.nav-pills .nav-link.active {
+    background: var(--ok-gradient) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 16px rgba(25, 70, 185, 0.3);
+}
+
+.dashboard-range-pill {
+    border: 1px solid var(--ok-border);
+    background: var(--ok-surface);
+    color: var(--ok-text-muted);
+    border-radius: 999px;
+    padding: .5rem 1.1rem;
+    font-weight: 600;
+    font-size: .85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    transition: all .2s ease;
+}
+
+.dashboard-range-pill:hover {
+    color: var(--ok-blue);
+    border-color: var(--ok-blue);
+}
+
+.dashboard-range-pill.active {
+    background: var(--ok-gradient);
+    border-color: transparent;
+    color: #fff !important;
+    box-shadow: 0 6px 16px rgba(25, 70, 185, 0.3);
+}
+
+/* ---------- Sidebar ---------- */
+.main-menu {
+    background: var(--ok-surface) !important;
+    border-inline-end: 1px solid var(--ok-border);
+}
+
+.main-menu .navbar-header {
+    background: var(--ok-surface) !important;
+}
+
+.main-menu .navigation > li.active > a {
+    background: var(--ok-gradient) !important;
+    box-shadow: 0 6px 16px rgba(25, 70, 185, 0.28) !important;
+    color: #fff !important;
+    border-radius: var(--ok-radius-sm);
+}
+
+.main-menu .navigation > li.active > a .menu-title,
+.main-menu .navigation > li.active > a i {
+    color: #fff !important;
+}
+
+.main-menu .navigation > li > a:hover {
+    background: var(--ok-surface-alt);
+    border-radius: var(--ok-radius-sm);
+}
+
+.main-menu .navigation > li > a {
+    color: var(--ok-text);
+    margin: 2px 10px;
+    border-radius: var(--ok-radius-sm);
+}
+
+.main-menu .navigation > li > a > i:first-child {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ok-surface-alt);
+    border-radius: 9px;
+    font-size: .9rem;
+    color: var(--ok-blue);
+    margin-inline-end: .3rem;
+}
+
+.main-menu .navigation > li.active > a > i:first-child {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+}
+
+.main-menu .navigation-header span {
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+/* ---------- Sidebar brand logo (wide horizontal logo, not a square icon) ---------- */
+.main-menu .navbar-header .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .5rem 0;
+    overflow: hidden;
+}
+
+.main-menu .navbar-header .brand-logo img {
+    height: 34px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.main-menu .navbar-header .brand-text {
+    display: none;
+}
+
+/* ---------- Navbar ---------- */
+.header-navbar {
+    background: var(--ok-surface) !important;
+    border-radius: var(--ok-radius) !important;
+    border: 1px solid var(--ok-border) !important;
+    box-shadow: var(--ok-shadow) !important;
+}
+
+.header-navbar .nav-link-style i {
+    color: var(--ok-text-muted);
+}
+
+/* Dark mode toggle button state */
+#ok-theme-toggle {
+    cursor: pointer;
+}
+
+#ok-theme-toggle .fa-sun { display: none; }
+html[data-ok-theme="dark"] #ok-theme-toggle .fa-moon { display: none; }
+html[data-ok-theme="dark"] #ok-theme-toggle .fa-sun { display: inline-block; }
+
+/* ---------- Tables ---------- */
+.table {
+    color: var(--ok-text);
+}
+
+.table thead th {
+    background: var(--ok-surface-alt);
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: none !important;
+    padding: .85rem 1rem !important;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--ok-border);
+}
+
+.table-hover tbody tr:hover {
+    background: var(--ok-surface-alt) !important;
+}
+
+.table td {
+    padding: .85rem 1rem !important;
+    vertical-align: middle;
+}
+
+/* ---------- Forms ---------- */
+.form-control,
+.form-select {
+    background-color: var(--ok-surface) !important;
+    border: 1px solid var(--ok-border) !important;
+    color: var(--ok-text) !important;
+    border-radius: var(--ok-radius-sm) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ok-blue) !important;
+    box-shadow: 0 0 0 3px rgba(25, 70, 185, 0.15) !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--ok-blue) !important;
+    border-color: var(--ok-blue) !important;
+}
+
+/* ---------- Modals ---------- */
+.modal-content {
+    background: var(--ok-surface) !important;
+    color: var(--ok-text);
+    border-radius: var(--ok-radius) !important;
+    border: 1px solid var(--ok-border) !important;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--ok-border) !important;
+}
+
+/* ---------- Analytics hero (dashboard.blade.php) brand touch ---------- */
+.analytics-hero-card {
+    background: var(--ok-gradient) !important;
+    color: #fff !important;
+    overflow: hidden;
+    position: relative;
+}
+
+.analytics-hero-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 90% -10%, rgba(255,255,255,.18), transparent 45%);
+    pointer-events: none;
+}
+
+.analytics-hero-card * {
+    color: #fff !important;
+}
+
+.analytics-hero-card .analytics-chip {
+    background: rgba(255,255,255,.18);
+    border-radius: 999px;
+    padding: .3rem .9rem;
+    font-size: .78rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* ---------- Stat tiles ---------- */
+.analytics-stat-card {
+    border-radius: var(--ok-radius) !important;
+}
+
+/* ---------- Scrollbar polish ---------- */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ok-border);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ok-blue-light);
+}
+
+/* ---------- Login / Auth pages ---------- */
+.ok-auth-shell {
+    display: flex;
+    min-height: calc(100vh - 140px);
+    border-radius: var(--ok-radius);
+    overflow: hidden;
+    box-shadow: var(--ok-shadow-lg);
+    background: var(--ok-surface);
+    margin: 1rem 0;
+}
+
+.ok-auth-brand-panel {
+    flex: 1 1 46%;
+    background: var(--ok-gradient);
+    color: #fff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3.5rem 3rem;
+    overflow: hidden;
+}
+
+.ok-auth-brand-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,.16), transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(255,255,255,.12), transparent 45%);
+    pointer-events: none;
+}
+
+.ok-auth-brand-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+}
+
+.ok-auth-brand-logo {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,.2));
+    border-radius: 16px;
+    background: #fff;
+    padding: 12px 16px;
+}
+
+.ok-auth-brand-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: .5rem;
+}
+
+.ok-auth-brand-subtitle {
+    opacity: .92;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    max-width: 360px;
+}
+
+.ok-auth-brand-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+}
+
+.ok-auth-brand-points li {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    font-weight: 600;
+    font-size: .95rem;
+}
+
+.ok-auth-brand-points i {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.18);
+    border-radius: 10px;
+}
+
+.ok-auth-brand-cart {
+    position: absolute;
+    bottom: -30px;
+    right: -20px;
+    font-size: 11rem;
+    color: rgba(255,255,255,.08);
+    z-index: 0;
+    transform: rotate(-8deg);
+}
+
+.ok-auth-form-panel {
+    flex: 1 1 54%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    background: var(--ok-surface);
+}
+
+.ok-auth-form-card {
+    width: 100%;
+    max-width: 380px;
+}
+
+@media (max-width: 992px) {
+    .ok-auth-shell {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .ok-auth-brand-panel {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .ok-auth-brand-cart {
+        display: none;
+    }
+}
+
+/* ---------- Drag handle affordance (categories/products reorder) ---------- */
+.drag-handle {
+    cursor: grab;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    opacity: .4;
+    background: var(--ok-surface-alt) !important;
+}
+
+/* ---------- Dark mode broader coverage ---------- */
+html[data-ok-theme="dark"] .dropdown-menu {
+    background-color: var(--ok-surface) !important;
+    border-color: var(--ok-border) !important;
+}
+
+html[data-ok-theme="dark"] .dropdown-item {
+    color: var(--ok-text) !important;
+}
+
+html[data-ok-theme="dark"] .dropdown-item:hover {
+    background-color: var(--ok-surface-alt) !important;
+}
+
+html[data-ok-theme="dark"] .text-muted {
+    color: var(--ok-text-muted) !important;
+}
+
+html[data-ok-theme="dark"] .list-unstyled,
+html[data-ok-theme="dark"] p,
+html[data-ok-theme="dark"] span,
+html[data-ok-theme="dark"] h1,
+html[data-ok-theme="dark"] h2,
+html[data-ok-theme="dark"] h3,
+html[data-ok-theme="dark"] h4,
+html[data-ok-theme="dark"] h5,
+html[data-ok-theme="dark"] h6,
+html[data-ok-theme="dark"] label,
+html[data-ok-theme="dark"] .table {
+    color: var(--ok-text);
+}
+
+html[data-ok-theme="dark"] .breadcrumb,
+html[data-ok-theme="dark"] code {
+    color: var(--ok-text);
+}
+
+html[data-ok-theme="dark"] hr,
+html[data-ok-theme="dark"] .border,
+html[data-ok-theme="dark"] .border-top {
+    border-color: var(--ok-border) !important;
+}
+
+html[data-ok-theme="dark"] .content-body {
+    color: var(--ok-text);
+}
+
+html[data-ok-theme="dark"] .header-navbar-shadow {
+    background: linear-gradient(var(--ok-body-bg) 44%, rgba(16, 19, 31, 0.7) 73%, rgba(16, 19, 31, 0)) !important;
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 768px) {
+    .card-body { padding: 1.1rem !important; }
+    .dashboard-range-switcher { gap: .4rem !important; }
+}

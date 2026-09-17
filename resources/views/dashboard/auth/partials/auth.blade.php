@@ -61,6 +61,8 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/assets/css/style.css">
     @endif
 
+    <link rel="stylesheet" type="text/css" href="{{ asset('dashboard') }}/app-assets/css/custom/one-kilo-theme.css">
+
 </head>
 <!-- END: Head-->
 
@@ -107,23 +109,30 @@
             <div class="content-header row">
             </div>
             <div class="content-body">
-                <div class="auth-wrapper auth-basic px-2">
-                    <div class="auth-inner my-2">
-                        <!-- Login basic -->
-                        <div class="card mb-0">
-                            <div class="card-body">
-                                <a class="brand-logo d-flex align-items-center">
-                                    <img src="{{ asset($setting->logo) }}" width="80" alt="Logo">
-                                    <h2 class="brand-text text-primary mb-0">{{ $setting->site_name }}</h2>
-                                </a>
+                <div class="ok-auth-shell">
+                    <div class="ok-auth-brand-panel">
+                        <div class="ok-auth-brand-inner">
+                            <img src="{{ asset($setting->logo) }}" alt="Logo" class="ok-auth-brand-logo">
+                            <h1 class="ok-auth-brand-title">{{ $setting->site_name }}</h1>
+                            <p class="ok-auth-brand-subtitle">{{ __('dashboard.auth-brand-subtitle') }}</p>
 
-                                @yield('content')
-                            </div>
+                            <ul class="ok-auth-brand-points">
+                                <li><i class="fa-solid fa-bolt"></i> {{ __('dashboard.auth-point-realtime') }}</li>
+                                <li><i class="fa-solid fa-chart-line"></i> {{ __('dashboard.auth-point-analytics') }}</li>
+                                <li><i class="fa-solid fa-truck-fast"></i> {{ __('dashboard.auth-point-delivery') }}</li>
+                            </ul>
                         </div>
-                        <!-- /Login basic -->
+                        <div class="ok-auth-brand-cart">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                    </div>
+
+                    <div class="ok-auth-form-panel">
+                        <div class="ok-auth-form-card">
+                            @yield('content')
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
