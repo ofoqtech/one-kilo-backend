@@ -290,9 +290,20 @@ body {
     cursor: pointer;
 }
 
-#ok-theme-toggle .fa-sun { display: none; }
-html[data-ok-theme="dark"] #ok-theme-toggle .fa-moon { display: none; }
-html[data-ok-theme="dark"] #ok-theme-toggle .fa-sun { display: inline-block; }
+#ok-theme-toggle .fa-sun,
+#ok-theme-toggle svg.fa-sun {
+    display: none !important;
+}
+
+html[data-ok-theme="dark"] #ok-theme-toggle .fa-moon,
+html[data-ok-theme="dark"] #ok-theme-toggle svg.fa-moon {
+    display: none !important;
+}
+
+html[data-ok-theme="dark"] #ok-theme-toggle .fa-sun,
+html[data-ok-theme="dark"] #ok-theme-toggle svg.fa-sun {
+    display: inline-block !important;
+}
 
 /* ---------- Tables ---------- */
 .table {

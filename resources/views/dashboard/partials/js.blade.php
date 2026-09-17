@@ -77,6 +77,14 @@
         var toggle = document.getElementById('ok-theme-toggle');
         if (!toggle) return;
 
+        function syncIcons() {
+            var isDark = document.documentElement.getAttribute('data-ok-theme') === 'dark';
+            var moon = toggle.querySelector('.fa-moon');
+            var sun = toggle.querySelector('.fa-sun');
+            if (moon) moon.style.display = isDark ? 'none' : '';
+            if (sun) sun.style.display = isDark ? '' : 'none';
+        }
+
         toggle.addEventListener('click', function (e) {
             e.preventDefault();
             var isDark = document.documentElement.getAttribute('data-ok-theme') === 'dark';
@@ -87,7 +95,12 @@
                 document.documentElement.setAttribute('data-ok-theme', 'dark');
                 try { localStorage.setItem('ok-theme', 'dark'); } catch (err) {}
             }
+            syncIcons();
         });
+
+        // FontAwesome replaces <i> with <svg> asynchronously, so wait a tick before the first sync.
+        setTimeout(syncIcons, 300);
+        window.addEventListener('load', syncIcons);
     })();
 </script>
 
