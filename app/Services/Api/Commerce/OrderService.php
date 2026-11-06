@@ -5,6 +5,7 @@ namespace App\Services\Api\Commerce;
 use App\Models\Order;
 use App\Repositories\Api\Commerce\OrderRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -79,6 +80,30 @@ class OrderService
 
         event(new \App\Events\OrderStatusChangedEvent($order, $oldStatus));
 
+        $this->notifyCustomerOrderCanceled($order);
+
         return $this->orderRepository->loadDetails($order);
+    }
+
+    private function notifyCustomerOrderCanceled(Order $order): void
+    {
+        try {
+            $token = $order->user?->fcm_token;
+
+            if (! $token) {
+                return;
+            }
+
+            $this->firebaseService->sendNotification(
+                $token,
+                'تم إلغاء طلبك بنجاح',
+                'رقم الطلب #' . $order->order_number,
+            );
+        } catch (\Throwable $e) {
+            Log::warning('Failed to send order-canceled push notification', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

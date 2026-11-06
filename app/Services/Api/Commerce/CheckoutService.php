@@ -14,6 +14,7 @@ use App\Repositories\Api\Commerce\CouponRepository;
 use App\Repositories\Api\Commerce\OrderRepository;
 use App\Repositories\Api\Commerce\WorkingHoursRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutService
 {
@@ -24,7 +25,8 @@ class CheckoutService
         protected CouponRepository $couponRepository,
         protected OrderRepository $orderRepository,
         protected WalletService $walletService,
-        protected CardPaymentService $cardPaymentService
+        protected CardPaymentService $cardPaymentService,
+        protected FirebaseService $firebaseService
     ) {}
 
     public function checkout(int $userId, array $data): array
@@ -88,11 +90,41 @@ class CheckoutService
                 $this->cartRepository->clear($cart);
             }
 
+            // Card orders are only confirmed once the payment gateway webhook
+            // reports success (see CardPaymentFinalizationService), so only
+            // notify the customer here for payment methods that are
+            // confirmed immediately (cash on delivery / wallet).
+            if ($order->payment_method !== Order::PAYMENT_METHOD_CARD) {
+                $this->notifyCustomerOrderReceived($order);
+            }
+
             return [
                 'order' => $this->orderRepository->loadDetails($order->fresh()),
                 'wallet' => $wallet,
             ];
         });
+    }
+
+    private function notifyCustomerOrderReceived(Order $order): void
+    {
+        try {
+            $token = $order->user?->fcm_token;
+
+            if (! $token) {
+                return;
+            }
+
+            $this->firebaseService->sendNotification(
+                $token,
+                'تم استلام طلبك بنجاح',
+                'رقم الطلب #' . $order->order_number,
+            );
+        } catch (\Throwable $e) {
+            Log::warning('Failed to send order-received push notification', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function createOrder(

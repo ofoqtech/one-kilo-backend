@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 class CardPaymentFinalizationService
 {
-    public function __construct(protected CartRepository $cartRepository)
-    {
+    public function __construct(
+        protected CartRepository $cartRepository,
+        protected FirebaseService $firebaseService
+    ) {
     }
 
     public function finalizeSuccessfulCardPayment(Order $order, Payment $payment): void
@@ -29,8 +31,9 @@ class CardPaymentFinalizationService
         }
 
         $now = now();
+        $finalized = false;
 
-        DB::transaction(function () use ($order, $payment, $now) {
+        DB::transaction(function () use ($order, $payment, $now, &$finalized) {
             $lockedOrder = Order::query()
                 ->whereKey($order->id)
                 ->lockForUpdate()
@@ -74,7 +77,39 @@ class CardPaymentFinalizationService
                     'payment_id' => $payment->id,
                     'gateway' => $payment->gateway,
                 ]);
+
+            $finalized = true;
         });
+
+        // Only notify once, the first time this order actually gets finalized
+        // (shouldFinalize() above makes this block idempotent across repeated
+        // webhook/reconciliation calls for the same order).
+        if ($finalized) {
+            $this->notifyCustomerOrderReceived($order);
+        }
+    }
+
+    private function notifyCustomerOrderReceived(Order $order): void
+    {
+        try {
+            $token = $order->user?->fcm_token;
+
+            if (! $token) {
+                return;
+            }
+
+            $this->firebaseService->sendNotification(
+                $token,
+                'تم استلام طلبك بنجاح',
+                'رقم الطلب #' . $order->order_number,
+            );
+        } catch (\Throwable $e) {
+            Log::channel((string) config('kashier.log_channel', 'stack'))
+                ->warning('Failed to send order-received push notification', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                ]);
+        }
     }
 
     protected function shouldFinalize(Order $order): bool
