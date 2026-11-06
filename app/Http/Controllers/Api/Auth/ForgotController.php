@@ -52,6 +52,12 @@ class ForgotController extends Controller
             'token' => 'required|string',
         ]);
 
+        \Illuminate\Support\Facades\Log::info('[forgot-password] verifyOtp request', [
+            'phone' => $data['phone'],
+            'token' => $data['token'],
+            'existing_rows' => \Fisal\Otp\Models\Otp::where('identifier', $data['phone'])->get(['id', 'otp_type', 'token', 'valid', 'attempts', 'created_at'])->toArray(),
+        ]);
+
         $isValid = $this->forgotService->verifyOtp($data);
         if (!$isValid) {
             return ApiResponse::sendResponse(422, __('front.invalid-otp'));

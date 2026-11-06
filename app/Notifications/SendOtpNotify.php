@@ -23,6 +23,9 @@ class SendOtpNotify extends Notification
 
         $otp = (new Otp)->generate($this->phone, 'numeric', 5, 5);
         $this->code = $otp->token;
+        Log::info("[OTP generate] phone={$this->phone} token={$this->code}", [
+            'row_after_generate' => \Fisal\Otp\Models\Otp::where('identifier', $this->phone)->where('otp_type', 'default')->where('valid', true)->get(['id', 'token', 'created_at'])->toArray(),
+        ]);
         if (app()->environment('local')) {
             Log::info("[OTP for {$this->phone}]: {$this->code}");
         }
