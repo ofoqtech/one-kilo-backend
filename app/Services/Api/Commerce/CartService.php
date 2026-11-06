@@ -239,6 +239,16 @@ class CartService
                 ['code' => [__('front.coupon-minimum-order-not-met')]]
             );
         }
+
+        $cartCategoryIds = $cart->items->pluck('product.category_id')->filter()->unique()->values()->all();
+
+        if (! $coupon->canApplyToCategories($cartCategoryIds)) {
+            throw new ApiBusinessException(
+                __('front.coupon-not-applicable-to-cart-items'),
+                422,
+                ['code' => [__('front.coupon-not-applicable-to-cart-items')]]
+            );
+        }
     }
 
     private function syncCouponState(Cart $cart, int $userId): Cart
