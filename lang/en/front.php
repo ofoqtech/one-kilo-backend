@@ -289,4 +289,8 @@ return [
     'profile-updated'                   => 'Profile updated successfully',
     'order_not_ready' => 'Order not ready',
     'update-location' => 'Location Updated',
+    'order-cannot-be-cancelled' => 'This order can no longer be cancelled in its current status',
+    'order-cancelled-by-customer-title' => 'Order Cancelled',
+    'cancelled-by-customer-default-reason' => 'Cancelled by the customer',
+    'order-cancelled-successfully' => 'Order cancelled successfully',
 ];

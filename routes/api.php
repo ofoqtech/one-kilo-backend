@@ -103,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{reference}', [OrderController::class, 'show']);
+    Route::post('/orders/{reference}/cancel', [OrderController::class, 'cancel']);
     Route::get('/getLocation/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'getLocation']);
 });
 

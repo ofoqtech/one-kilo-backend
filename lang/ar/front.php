@@ -287,4 +287,8 @@ return [
     'profile-updated'                   => 'تم تعديل بيانات المستخدم بنجاح',
     'order_not_ready' => 'لا يمكن تنفيذ العملية لأن الطلب غير جاهز ',
     'update-location' => 'تم تعديل العنوان',
+    'order-cannot-be-cancelled' => 'لا يمكن إلغاء هذا الطلب في حالته الحالية',
+    'order-cancelled-by-customer-title' => 'تم إلغاء الطلب',
+    'cancelled-by-customer-default-reason' => 'تم الإلغاء بواسطة العميل',
+    'order-cancelled-successfully' => 'تم إلغاء الطلب بنجاح',
 ];

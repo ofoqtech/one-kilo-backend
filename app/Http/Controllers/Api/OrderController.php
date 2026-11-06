@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Commerce\CancelOrderRequest;
 use App\Http\Requests\Api\Commerce\OrderIndexRequest;
 use App\Http\Resources\OrderDetailsResource;
 use App\Http\Resources\OrderResource;
@@ -40,6 +41,21 @@ class OrderController extends Controller
         return ApiResponse::sendResponse(
             200,
             __('front.order-retrieved-successfully'),
+            new OrderDetailsResource($order)
+        );
+    }
+
+    public function cancel(CancelOrderRequest $request, string $reference)
+    {
+        $order = $this->service->cancel(
+            auth('sanctum')->user()->id,
+            $reference,
+            $request->validated()['reason'] ?? null
+        );
+
+        return ApiResponse::sendResponse(
+            200,
+            __('front.order-cancelled-successfully'),
             new OrderDetailsResource($order)
         );
     }

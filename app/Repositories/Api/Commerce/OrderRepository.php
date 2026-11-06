@@ -199,6 +199,11 @@ class OrderRepository
         $order->items()->createMany($items);
     }
 
+    public function createStatusLog(Order $order, array $data): \App\Models\OrderStatusLog
+    {
+        return $order->statusLogs()->create($data);
+    }
+
     public function loadDetails(Order $order): Order
     {
         return $order->load([
