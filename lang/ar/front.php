@@ -264,6 +264,7 @@ return [
     'wallet-transactions-retrieved-successfully'=> 'تم جلب معاملات المحفظة بنجاح',
     'wallet-inactive'                           => 'المحفظة غير مفعلة',
     'wallet-insufficient-balance'               => 'رصيد المحفظة غير كاف',
+    'wallet-topup-session-created-successfully' => 'تم إنشاء عملية شحن المحفظة بنجاح',
     'orders-retrieved-successfully'             => 'تم جلب الطلبات بنجاح',
     'order-retrieved-successfully'              => 'تم جلب الطلب بنجاح',
     'checkout-completed-successfully'           => 'تم إتمام الطلب بنجاح',

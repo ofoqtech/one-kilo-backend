@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Commerce\WalletTopupRequest;
 use App\Http\Resources\WalletResource;
 use App\Http\Resources\WalletTransactionResource;
 use App\Services\Api\Commerce\WalletService;
@@ -42,6 +43,25 @@ class WalletController extends Controller
                 'current_page' => $transactions->currentPage(),
                 'last_page' => $transactions->lastPage(),
                 'per_page' => $transactions->perPage(),
+            ]
+        );
+    }
+
+    public function topup(WalletTopupRequest $request)
+    {
+        $topup = $this->service->initiateTopup(
+            auth('sanctum')->user()->id,
+            (float) $request->input('amount')
+        );
+
+        return ApiResponse::sendResponse(
+            200,
+            __('front.wallet-topup-session-created-successfully'),
+            [
+                'reference' => $topup->merchant_order_id,
+                'amount' => round((float) $topup->amount, 2),
+                'currency' => $topup->currency,
+                'payment_url' => $topup->payment_url,
             ]
         );
     }

@@ -265,6 +265,7 @@ return [
     'wallet-transactions-retrieved-successfully'    => 'Wallet transactions retrieved successfully',
     'wallet-inactive'                               => 'Your wallet is inactive',
     'wallet-insufficient-balance'                   => 'Your wallet balance is insufficient',
+    'wallet-topup-session-created-successfully'     => 'Wallet top-up session created successfully',
     'orders-retrieved-successfully'                 => 'Orders retrieved successfully',
     'order-retrieved-successfully'                  => 'Order retrieved successfully',
     'checkout-completed-successfully'               => 'Checkout completed successfully',

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\Payments\KashierController as KashierPaymentsController;
+use App\Http\Controllers\Api\Payments\KashierWalletController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\WalletController;
@@ -74,6 +75,11 @@ Route::get('/payments/kashier/callback', [KashierPaymentsController::class, 'cal
     ->name('api.payments.kashier.callback');
 Route::post('/payments/kashier/webhook', [KashierPaymentsController::class, 'webhook'])
     ->name('api.payments.kashier.webhook');
+
+Route::get('/payments/kashier/wallet-callback', [KashierWalletController::class, 'callback'])
+    ->name('api.payments.kashier.wallet-callback');
+Route::post('/payments/kashier/wallet-webhook', [KashierWalletController::class, 'webhook'])
+    ->name('api.payments.kashier.wallet-webhook');
 ## ================== PAYMENTS (Public) ================== ##
 
 
@@ -89,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->whereNumber('id');
 
     Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
+    Route::post('/wallet/topup', [WalletController::class, 'topup']);
     Route::get('/wallet', [WalletController::class, 'show']);
 
     Route::get('/cart', [CartController::class, 'show']);

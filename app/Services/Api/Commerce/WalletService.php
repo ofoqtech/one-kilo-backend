@@ -5,14 +5,17 @@ namespace App\Services\Api\Commerce;
 use App\Exceptions\ApiBusinessException;
 use App\Models\Order;
 use App\Models\Wallet;
+use App\Models\WalletTopup;
 use App\Models\WalletTransaction;
 use App\Repositories\Api\Commerce\WalletRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class WalletService
 {
-    public function __construct(protected WalletRepository $walletRepository)
-    {
+    public function __construct(
+        protected WalletRepository $walletRepository,
+        protected WalletTopupService $walletTopupService
+    ) {
     }
 
     public function current(int $userId): Wallet
@@ -72,6 +75,21 @@ class WalletService
     public function refreshWallet(Wallet $wallet): Wallet
     {
         return $this->walletRepository->loadDetails($wallet->fresh());
+    }
+
+    public function initiateTopup(int $userId, float $amount): WalletTopup
+    {
+        $wallet = $this->walletRepository->getOrCreateForUser($userId);
+
+        if (! $wallet->status) {
+            throw new ApiBusinessException(
+                __('front.wallet-inactive'),
+                422,
+                ['wallet' => [__('front.wallet-inactive')]]
+            );
+        }
+
+        return $this->walletTopupService->generateTopupSession($wallet, $amount);
     }
 
     private function resolveWalletForPayment(int $userId): Wallet

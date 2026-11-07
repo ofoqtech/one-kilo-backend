@@ -15,6 +15,7 @@ class WalletTransaction extends Model
     public const REASON_MANUAL_ADJUSTMENT = 'manual_adjustment';
     public const REASON_BONUS = 'bonus';
     public const REASON_REVERSAL = 'reversal';
+    public const REASON_TOPUP = 'topup';
 
     protected $fillable = [
         'wallet_id',
