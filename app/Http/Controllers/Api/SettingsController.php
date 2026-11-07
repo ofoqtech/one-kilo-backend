@@ -120,19 +120,19 @@ class SettingsController extends Controller
 
     public function activePopup()
     {
-        $popup = AppPopup::query()
+        $popups = AppPopup::query()
             ->active()
             ->currentlyRunning()
             ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
             ->orderBy('sort_order')
             ->latest('id')
-            ->first();
+            ->get();
 
-        if (! $popup) {
+        if ($popups->isEmpty()) {
             return ApiResponse::sendResponse(404, __('front.no-active-popup-found'), []);
         }
 
-        return ApiResponse::sendResponse(200, __('front.retrieved-successfully'), new AppPopupResource($popup));
+        return ApiResponse::sendResponse(200, __('front.retrieved-successfully'), AppPopupResource::collection($popups));
     }
 
 }
