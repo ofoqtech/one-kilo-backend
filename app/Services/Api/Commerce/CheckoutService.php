@@ -26,12 +26,13 @@ class CheckoutService
         protected OrderRepository $orderRepository,
         protected WalletService $walletService,
         protected CardPaymentService $cardPaymentService,
-        protected FirebaseService $firebaseService
+        protected FirebaseService $firebaseService,
+        protected OrderAnnouncementService $orderAnnouncementService
     ) {}
 
     public function checkout(int $userId, array $data): array
     {
-        return DB::transaction(function () use ($userId, $data) {
+        $result = DB::transaction(function () use ($userId, $data) {
             $address = $this->addressRepository->findActiveForUser($userId, (int) $data['address_id']);
             $cart = $this->cartRepository->findForUser($userId);
 
@@ -90,19 +91,31 @@ class CheckoutService
                 $this->cartRepository->clear($cart);
             }
 
-            // Card orders are only confirmed once the payment gateway webhook
-            // reports success (see CardPaymentFinalizationService), so only
-            // notify the customer here for payment methods that are
-            // confirmed immediately (cash on delivery / wallet).
-            if ($order->payment_method !== Order::PAYMENT_METHOD_CARD) {
-                $this->notifyCustomerOrderReceived($order);
-            }
-
             return [
                 'order' => $this->orderRepository->loadDetails($order->fresh()),
                 'wallet' => $wallet,
             ];
         });
+
+        // These are irreversible external side effects (push notification,
+        // Firebase write, dashboard broadcast), so they must only run once
+        // the transaction above has actually committed — never from inside
+        // it. Otherwise a later failure in the same transaction (e.g.
+        // insufficient wallet balance) rolls the order back in the DB, but
+        // the notification/announcement already fired and can't be undone.
+        //
+        // Card orders are only confirmed once the payment gateway webhook
+        // reports success (see CardPaymentFinalizationService), so only
+        // notify/announce here for payment methods that are confirmed
+        // immediately (cash on delivery / wallet).
+        $order = $result['order'];
+
+        if ($order->payment_method !== Order::PAYMENT_METHOD_CARD) {
+            $this->notifyCustomerOrderReceived($order);
+            $this->orderAnnouncementService->announce($order);
+        }
+
+        return $result;
     }
 
     private function notifyCustomerOrderReceived(Order $order): void

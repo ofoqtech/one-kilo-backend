@@ -23,7 +23,9 @@ class OrdersBoard extends Component
     {
         // STATUS_AWAITING_PAYMENT is deliberately excluded from every group:
         // unpaid card orders must not appear on the dashboard at all until
-        // the payment is actually confirmed (see OrderObserver).
+        // the payment is actually confirmed (see CheckoutService, which
+        // never announces card orders, and CardPaymentFinalizationService,
+        // which announces them once paid).
         return [
             'incoming' => [Order::STATUS_PENDING, Order::STATUS_CONFIRMED, Order::STATUS_PREPARING, Order::STATUS_READY],
             'in_delivery' => [Order::STATUS_OUT_FOR_DELIVERY, Order::STATUS_PICKED_UP],

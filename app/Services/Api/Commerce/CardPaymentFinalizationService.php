@@ -86,8 +86,8 @@ class CardPaymentFinalizationService
         // finalized (shouldFinalize() above makes this block idempotent
         // across repeated webhook/reconciliation calls for the same order).
         // This is also the first time a card order becomes visible to the
-        // dashboard — it was deliberately withheld at creation time (see
-        // OrderObserver) while payment was still unconfirmed.
+        // dashboard — it is deliberately not announced at checkout time
+        // (see CheckoutService) while payment is still unconfirmed.
         if ($finalized) {
             $this->notifyCustomerOrderReceived($order);
             $this->announcementService->announce($order->fresh());

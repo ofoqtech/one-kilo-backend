@@ -10,10 +10,13 @@ class OrderAnnouncementService
 {
     /**
      * Makes a new order visible to the dashboard: pushes it to the Firebase
-     * RTDB feed and broadcasts the "order.created" event. Call this the
-     * moment an order should first appear to staff — immediately for
-     * cash/wallet orders, but only once payment is confirmed for card
-     * orders (see OrderObserver and CardPaymentFinalizationService).
+     * RTDB feed and broadcasts the "order.created" event. Call this only
+     * once the order is durably committed and actually paid/placed — for
+     * cash and wallet orders that's right after checkout() commits (see
+     * CheckoutService), and for card orders it's once payment is confirmed
+     * (see CardPaymentFinalizationService). Never call this from inside a
+     * transaction that could still roll back: both the broadcast and the
+     * Firebase write fire immediately and can't be undone.
      */
     public function announce(Order $order): void
     {
@@ -32,14 +35,5 @@ class OrderAnnouncementService
             ]);
 
         OrderCreatedEvent::dispatch($order);
-    }
-
-    public function shouldAnnounceOnCreation(Order $order): bool
-    {
-        if ($order->payment_method === Order::PAYMENT_METHOD_CARD) {
-            return $order->payment_status === Order::PAYMENT_STATUS_PAID;
-        }
-
-        return true;
     }
 }
