@@ -225,7 +225,11 @@ class OrdersData extends Component
             })
             ->when(
                 $this->statusFilter !== 'all',
-                fn (Builder $query) => $query->where('status', $this->statusFilter)
+                fn (Builder $query) => $query->where('status', $this->statusFilter),
+                // By default, hide unpaid card orders (awaiting_payment) —
+                // they shouldn't reach the dashboard until payment is
+                // confirmed. Staff can still explicitly filter for them.
+                fn (Builder $query) => $query->where('status', '!=', Order::STATUS_AWAITING_PAYMENT)
             )
             ->when(
                 $this->paymentStatusFilter !== 'all',

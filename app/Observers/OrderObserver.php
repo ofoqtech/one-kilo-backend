@@ -2,34 +2,31 @@
 
 namespace App\Observers;
 
-use App\Events\OrderCreatedEvent;
 use App\Models\Order;
-use Kreait\Firebase\Factory;
+use App\Services\Api\Commerce\OrderAnnouncementService;
 
 class OrderObserver
 {
+    public function __construct(protected OrderAnnouncementService $announcementService)
+    {
+    }
+
     /**
      * Handle the Order "created" event.
+     *
+     * Card orders are created in "awaiting_payment" and must not reach the
+     * dashboard until the payment is actually confirmed (see
+     * CardPaymentFinalizationService, which announces them later). Cash
+     * and wallet orders are already final/paid at creation time, so they
+     * are announced immediately.
      */
     public function created(Order $order)
     {
-        // Fire Event
-        $factory = (new Factory)
-                ->withServiceAccount(config('services.firebase.credentials'))
-                ->withDatabaseUri('https://one-kilo-d1a84-default-rtdb.firebaseio.com');
+        if (! $this->announcementService->shouldAnnounceOnCreation($order)) {
+            return;
+        }
 
-
-        $database = $factory->createDatabase();
-
-        $database->getReference('orders/' . $order->id)
-            ->set([
-                'id' => $order->order_number,
-                'user_name' => $order->user->name,
-                'total' => $order->total,
-                'created_at' => $order->created_at->toDateTimeString(),
-            ]);
-
-        OrderCreatedEvent::dispatch($order);
+        $this->announcementService->announce($order);
     }
 
     /**

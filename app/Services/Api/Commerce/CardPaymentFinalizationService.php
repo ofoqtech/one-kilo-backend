@@ -16,7 +16,8 @@ class CardPaymentFinalizationService
 {
     public function __construct(
         protected CartRepository $cartRepository,
-        protected FirebaseService $firebaseService
+        protected FirebaseService $firebaseService,
+        protected OrderAnnouncementService $announcementService
     ) {
     }
 
@@ -81,11 +82,15 @@ class CardPaymentFinalizationService
             $finalized = true;
         });
 
-        // Only notify once, the first time this order actually gets finalized
-        // (shouldFinalize() above makes this block idempotent across repeated
-        // webhook/reconciliation calls for the same order).
+        // Only notify/announce once, the first time this order actually gets
+        // finalized (shouldFinalize() above makes this block idempotent
+        // across repeated webhook/reconciliation calls for the same order).
+        // This is also the first time a card order becomes visible to the
+        // dashboard — it was deliberately withheld at creation time (see
+        // OrderObserver) while payment was still unconfirmed.
         if ($finalized) {
             $this->notifyCustomerOrderReceived($order);
+            $this->announcementService->announce($order->fresh());
         }
     }
 
