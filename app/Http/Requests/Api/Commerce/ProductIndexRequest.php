@@ -28,7 +28,7 @@ class ProductIndexRequest extends ApiFormRequest
                 'name_asc',
                 'name_desc',
             ])],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:500'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:1000'],
         ];
     }
 
@@ -39,8 +39,8 @@ class ProductIndexRequest extends ApiFormRequest
             'sort' => $this->validated('sort', 'latest'),
             // The customer app's current build never sends per_page or
             // pages past the first one, so the default must already cover
-            // the full product list.
-            'per_page' => (int) $this->validated('per_page', 500),
+            // the full product list (670 active products as of 2026-11-17).
+            'per_page' => (int) $this->validated('per_page', 1000),
             'status' => $this->has('status') ? $this->boolean('status') : true,
             'include_descendants' => $this->has('include_descendants')
                 ? $this->boolean('include_descendants')
