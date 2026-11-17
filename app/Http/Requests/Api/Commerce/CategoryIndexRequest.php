@@ -17,7 +17,7 @@ class CategoryIndexRequest extends ApiFormRequest
             'root_only' => ['nullable', 'boolean'],
             'include_children' => ['nullable', 'boolean'],
             'sort' => ['nullable', Rule::in(['latest', 'oldest', 'name', 'sort_order'])],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:500'],
         ];
     }
 
@@ -26,7 +26,10 @@ class CategoryIndexRequest extends ApiFormRequest
         $filters = [
             'search' => $this->validated('search'),
             'sort' => $this->validated('sort', 'sort_order'),
-            'per_page' => (int) $this->validated('per_page', 15),
+            // The customer app's current build never sends per_page or
+            // pages past the first one, so the default must already cover
+            // the full category list.
+            'per_page' => (int) $this->validated('per_page', 500),
             'status' => $this->has('status') ? $this->boolean('status') : true,
         ];
 
